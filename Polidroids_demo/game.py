@@ -16,7 +16,11 @@ class Polidroids: # Classe principal do jogo
         pygame.display.set_caption("Polidroids") # Define o título da janela
 
     def _handle_input(self): # Método trata os eventos
-        pass
+        for event in pygame.event.get(): # Percorre todos os eventos
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ): # Verifica se o evento é de fechar a janela ou apertar a tecla ESC
+                pygame.quit() # Fecha o jogo
 
     def _process_game_logic(self): # Método processa a lógica do jogo
         pass
