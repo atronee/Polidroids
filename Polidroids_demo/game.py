@@ -1,9 +1,12 @@
 import pygame # Importa o módulo pygame
 
+from utils import load_sprite # Importa o método load_sprite do módulo utils
+
 class Polidroids: # Classe principal do jogo
     def __init__(self): # Método construtor
         self._init_pygame() # Inicializa o pygame
         self.screen = pygame.display.set_mode((800, 600)) # Cria uma tela de 800x600
+        self.background = load_sprite("background", False) # Carrega a imagem de fundo
 
     def main_loop(self): # Método principal do jogo
         while True: # Cria um loop infinito
@@ -26,5 +29,5 @@ class Polidroids: # Classe principal do jogo
         pass
 
     def _draw(self): # Método desenha na tela
-        self.screen.fill((0, 0, 255)) # Preenche a tela de azul
+        self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
         pygame.display.flip() # Atualiza a tela
