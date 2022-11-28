@@ -8,12 +8,13 @@ class Polidroids: # Classe principal do jogo
     
     def __init__(self): # Método construtor
         self._init_pygame() # Inicializa o pygame
-        self.screen = pygame.display.set_mode((800, 600)) # Cria uma tela de 800x600
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) # Cria a tela do jogo
         self.background = load_sprite("background_space", False) # Carrega a imagem de fundo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         
         self.asteroids = [] # Cria uma lista de asteroides
-        self.spaceship = Spaceship((400, 300)) # Cria uma instância da classe Spaceship
+        self.bullets = [] # Cria uma lista de tiros
+        self.spaceship = Spaceship((400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
         
         for _ in range(6): # Cria 6 asteroides
             while True:
@@ -46,19 +47,44 @@ class Polidroids: # Classe principal do jogo
                 event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
             ): # Verifica se o evento é de fechar a janela ou apertar a tecla ESC
                 pygame.quit() # Fecha o jogo
+            elif (
+                self.spaceship
+                and event.type == pygame.KEYDOWN
+                and event.key == pygame.K_SPACE
+            ): # Verifica se a nave existe e se o evento é de apertar a tecla ESPAÇO
+                self.spaceship.shoot() # Chama o método shoot da nave
                 
         is_key_pressed = pygame.key.get_pressed() # Pega todas as teclas pressionadas
 
-        if is_key_pressed[pygame.K_RIGHT]: # Verifica se a tecla direita está pressionada
-            self.spaceship.rotate(clockwise=True) # Rotaciona a nave no sentido horário
-        elif is_key_pressed[pygame.K_LEFT]: # Verifica se a tecla esquerda está pressionada
-            self.spaceship.rotate(clockwise=False) # Rotaciona a nave no sentido anti-horário
-        if is_key_pressed[pygame.K_UP]: # Verifica se a tecla para cima está pressionada
-            self.spaceship.accelerate() # Acelera a nave
+        if self.spaceship: # Verifica se a nave existe
+            if is_key_pressed[pygame.K_RIGHT]: # Verifica se a tecla direita está pressionada
+                self.spaceship.rotate(clockwise=True) # Rotaciona a nave no sentido horário
+            elif is_key_pressed[pygame.K_LEFT]: # Verifica se a tecla esquerda está pressionada
+                self.spaceship.rotate(clockwise=False) # Rotaciona a nave no sentido anti-horário
+            if is_key_pressed[pygame.K_UP]: # Verifica se a tecla para cima está pressionada
+                self.spaceship.accelerate() # Acelera a nave
 
     def _process_game_logic(self): # Método processa a lógica do jogo
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
+            
+        if self.spaceship: # Verifica se a nave existe
+            for asteroid in self.asteroids: # Percorre todos os asteroides
+                if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
+                    self.spaceship = None # Remove a nave
+                    break
+        
+        for bullet in self.bullets[:]: # Percorre todos os tiros
+            for asteroid in self.asteroids[:]: # Percorre todos os asteroides
+                if asteroid.collides_with(bullet): # Verifica se o asteroide colidiu com o tiro
+                    self.asteroids.remove(asteroid) # Remove o asteroide
+                    self.bullets.remove(bullet) # Remove o tiro
+                    asteroid.split() # Divide o asteroide em 2
+                    break
+                
+        for bullet in self.bullets[:]: # Percorre todos os tiros
+            if not self.screen.get_rect().collidepoint(bullet.position): # Verifica se o tiro saiu da tela
+                self.bullets.remove(bullet) # Remove o tiro da lista de tiros
 
     def _draw(self): # Método desenha na tela
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
@@ -70,4 +96,9 @@ class Polidroids: # Classe principal do jogo
         self.clock.tick(60) # Define o FPS
         
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        return [*self.asteroids, self.spaceship] # Retorna uma lista com os objetos do jogo
+        game_objects = [*self.asteroids, *self.bullets] # Cria uma lista com todos os asteroides e tiros
+        
+        if self.spaceship:
+            game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
+            
+        return game_objects # Retorna a lista de objetos do jogo
