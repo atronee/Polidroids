@@ -1,18 +1,31 @@
 import pygame # Importa o módulo pygame
 
-from models import GameObject, Spaceship # Importa as classes GameObject e Spaceship do módulo models
-from utils import load_sprite # Importa o método load_sprite do módulo utils
+from models import GameObject, Spaceship, Asteroids # Importa as classes GameObject, Spaceship e Asteroids
+from utils import get_random_position, load_sprite # Importa os métodos get_random_position e load_sprite
 
 class Polidroids: # Classe principal do jogo
+    MIN_ASTEROID_DISTANCE = 250
+    
     def __init__(self): # Método construtor
         self._init_pygame() # Inicializa o pygame
         self.screen = pygame.display.set_mode((800, 600)) # Cria uma tela de 800x600
         self.background = load_sprite("background_space", False) # Carrega a imagem de fundo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
+        
+        self.asteroids = [] # Cria uma lista de asteroides
         self.spaceship = Spaceship((400, 300)) # Cria uma instância da classe Spaceship
-        self.asteroid = GameObject(
-            (400, 300), load_sprite("hexagoid"), (1, 0)
-        ) # Cria uma instância da classe GameObject para o asteroide
+        
+        for _ in range(6): # Cria 6 asteroides
+            while True:
+                position = get_random_position(self.screen) # Pega uma posição aleatória
+                if (
+                    position.distance_to(self.spaceship.position)
+                    > self.MIN_ASTEROID_DISTANCE
+                ): # Verifica se a posição do asteroide está a uma distância mínima da nave
+                    break
+
+        self.asteroids.append(Asteroids(position)) # Adiciona o asteroide na lista de asteroides
+                
         self.enemy = GameObject(
             (400, 300), load_sprite("enemy_spaceship"), (0, 1)
         ) # Cria uma instância da classe GameObject para o inimigo
@@ -44,11 +57,17 @@ class Polidroids: # Classe principal do jogo
             self.spaceship.accelerate() # Acelera a nave
 
     def _process_game_logic(self): # Método processa a lógica do jogo
-        self.spaceship.move(self.screen) # Move a nave
+        for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
+            game_object.move(self.screen) # Move o objeto
 
     def _draw(self): # Método desenha na tela
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
-        self.spaceship.draw(self.screen) # Desenha a nave na tela
-        self.asteroid.draw(self.screen) # Desenha o asteroide na tela
+        
+        for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
+            game_object.draw(self.screen) # Desenha o objeto na tela
+        
         pygame.display.flip() # Atualiza a tela
-        self.clock.tick(60)
+        self.clock.tick(60) # Define o FPS
+        
+    def _get_game_objects(self): # Método retorna todos os objetos do jogo
+        return [*self.asteroids, self.spaceship] # Retorna uma lista com os objetos do jogo
