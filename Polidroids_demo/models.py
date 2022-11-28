@@ -1,6 +1,6 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
-from utils import load_sprite, wrap_position # Importa o método load_sprite do módulo utils
+from utils import get_random_velocity, load_sprite, wrap_position # Importa os métodos do módulo utils
 
 UP = Vector2(0, -1) # Define a direção para cima
 
@@ -44,3 +44,7 @@ class Spaceship(GameObject): # Classe para a nave
         rotated_surface_size = Vector2(rotated_surface.get_size()) # Calcula o tamanho da imagem rotacionada
         blit_position = self.position - rotated_surface_size * 0.5 # Define a posição da imagem rotacionada
         surface.blit(rotated_surface, blit_position) # Desenha a imagem rotacionada na tela
+        
+class Asteroids(GameObject): # Classe para os asteroides
+    def __init__(self, position): # Método construtor
+        super().__init__(position, load_sprite("hexagoid"), get_random_velocity(1, 3)) # Chama o construtor da classe pai

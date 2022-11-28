@@ -1,3 +1,4 @@
+import random # Importa a biblioteca random
 from pygame.image import load # Importa o método load do módulo image do pygame
 from pygame.math import Vector2 # Importa o módulo math do pygame
 
@@ -14,3 +15,13 @@ def wrap_position(position, surface): # Método retorna a posição do objeto de
     x, y = position # Desempacota a posição
     w, h = surface.get_size() # Calcula o tamanho da tela
     return Vector2(x % w, y % h) # Retorna a posição dentro da tela
+
+def get_random_position(surface): # Método retorna uma posição aleatória dentro da tela
+    return Vector2(
+        random.randrange(surface.get_width()),
+        random.randrange(surface.get_height()))
+    
+def get_random_velocity(min_speed, max_speed): # Método retorna uma velocidade aleatória
+    speed = random.randint(min_speed, max_speed) # Calcula a velocidade
+    angle = random.randrange(0, 360) # Calcula o ângulo
+    return Vector2(speed, 0).rotate(angle) # Retorna a velocidade
