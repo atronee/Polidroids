@@ -1,2 +1,0 @@
-1. Game_soundtrack_1 - Main gameplay song
-2. Game_soundtrack_2 - Story theme
