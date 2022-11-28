@@ -8,7 +8,7 @@ class Polidroids: # Classe principal do jogo
     
     def __init__(self): # Método construtor
         self._init_pygame() # Inicializa o pygame
-        self.screen = pygame.display.set_mode((800, 600)) # Cria uma tela de 800x600
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) # Cria a tela do jogo
         self.background = load_sprite("background_space", False) # Carrega a imagem de fundo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         
@@ -49,16 +49,23 @@ class Polidroids: # Classe principal do jogo
                 
         is_key_pressed = pygame.key.get_pressed() # Pega todas as teclas pressionadas
 
-        if is_key_pressed[pygame.K_RIGHT]: # Verifica se a tecla direita está pressionada
-            self.spaceship.rotate(clockwise=True) # Rotaciona a nave no sentido horário
-        elif is_key_pressed[pygame.K_LEFT]: # Verifica se a tecla esquerda está pressionada
-            self.spaceship.rotate(clockwise=False) # Rotaciona a nave no sentido anti-horário
-        if is_key_pressed[pygame.K_UP]: # Verifica se a tecla para cima está pressionada
-            self.spaceship.accelerate() # Acelera a nave
+        if self.spaceship: # Verifica se a nave existe
+            if is_key_pressed[pygame.K_RIGHT]: # Verifica se a tecla direita está pressionada
+                self.spaceship.rotate(clockwise=True) # Rotaciona a nave no sentido horário
+            elif is_key_pressed[pygame.K_LEFT]: # Verifica se a tecla esquerda está pressionada
+                self.spaceship.rotate(clockwise=False) # Rotaciona a nave no sentido anti-horário
+            if is_key_pressed[pygame.K_UP]: # Verifica se a tecla para cima está pressionada
+                self.spaceship.accelerate() # Acelera a nave
 
     def _process_game_logic(self): # Método processa a lógica do jogo
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
+            
+        if self.spaceship: # Verifica se a nave existe
+            for asteroid in self.asteroids: # Percorre todos os asteroides
+                if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
+                    self.spaceship = None # Remove a nave
+                    break  
 
     def _draw(self): # Método desenha na tela
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
@@ -70,4 +77,9 @@ class Polidroids: # Classe principal do jogo
         self.clock.tick(60) # Define o FPS
         
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        return [*self.asteroids, self.spaceship] # Retorna uma lista com os objetos do jogo
+        game_objects = [*self.asteroids] # Cria uma lista com os asteroides
+        
+        if self.spaceship:
+            game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
+            
+        return game_objects # Retorna a lista de objetos do jogo
