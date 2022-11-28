@@ -13,7 +13,8 @@ class Polidroids: # Classe principal do jogo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         
         self.asteroids = [] # Cria uma lista de asteroides
-        self.spaceship = Spaceship((400, 300)) # Cria uma instância da classe Spaceship
+        self.bullets = [] # Cria uma lista de tiros
+        self.spaceship = Spaceship((400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
         
         for _ in range(6): # Cria 6 asteroides
             while True:
@@ -46,6 +47,12 @@ class Polidroids: # Classe principal do jogo
                 event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
             ): # Verifica se o evento é de fechar a janela ou apertar a tecla ESC
                 pygame.quit() # Fecha o jogo
+            elif (
+                self.spaceship
+                and event.type == pygame.KEYDOWN
+                and event.key == pygame.K_SPACE
+            ): # Verifica se a nave existe e se o evento é de apertar a tecla ESPAÇO
+                self.spaceship.shoot() # Chama o método shoot da nave
                 
         is_key_pressed = pygame.key.get_pressed() # Pega todas as teclas pressionadas
 
@@ -65,7 +72,19 @@ class Polidroids: # Classe principal do jogo
             for asteroid in self.asteroids: # Percorre todos os asteroides
                 if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
                     self.spaceship = None # Remove a nave
-                    break  
+                    break
+        
+        for bullet in self.bullets[:]: # Percorre todos os tiros
+            for asteroid in self.asteroids[:]: # Percorre todos os asteroides
+                if asteroid.collides_with(bullet): # Verifica se o asteroide colidiu com o tiro
+                    self.asteroids.remove(asteroid) # Remove o asteroide
+                    self.bullets.remove(bullet) # Remove o tiro
+                    asteroid.split() # Divide o asteroide em 2
+                    break
+                
+        for bullet in self.bullets[:]: # Percorre todos os tiros
+            if not self.screen.get_rect().collidepoint(bullet.position): # Verifica se o tiro saiu da tela
+                self.bullets.remove(bullet) # Remove o tiro da lista de tiros
 
     def _draw(self): # Método desenha na tela
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
@@ -77,7 +96,7 @@ class Polidroids: # Classe principal do jogo
         self.clock.tick(60) # Define o FPS
         
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        game_objects = [*self.asteroids] # Cria uma lista com os asteroides
+        game_objects = [*self.asteroids, *self.bullets] # Cria uma lista com todos os asteroides e tiros
         
         if self.spaceship:
             game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo

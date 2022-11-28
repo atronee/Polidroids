@@ -25,8 +25,10 @@ class GameObject: # Classe base para todos os objetos do jogo
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
     ACCELERATION = 0.25 # Define a aceleração da nave
+    BULLET_SPEED = 3 # Define a velocidade do tiro
     
-    def __init__(self, position): # Método construtor
+    def __init__(self, position, create_bullet_callback): # Método construtor
+        self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
         super().__init__(position, load_sprite("spaceship"), Vector2(0)) # Chama o construtor da classe pai
         
@@ -45,6 +47,18 @@ class Spaceship(GameObject): # Classe para a nave
         blit_position = self.position - rotated_surface_size * 0.5 # Define a posição da imagem rotacionada
         surface.blit(rotated_surface, blit_position) # Desenha a imagem rotacionada na tela
         
+    def shoot(self):
+        bullet_velocity = self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
+        bullet = Bullet(self.position, bullet_velocity) # Cria um tiro
+        self.create_bullet_callback(bullet) # Chama o método para criar um tiro
+        
 class Asteroids(GameObject): # Classe para os asteroides
     def __init__(self, position): # Método construtor
         super().__init__(position, load_sprite("hexagoid"), get_random_velocity(1, 3)) # Chama o construtor da classe pai
+        
+class Bullet(GameObject): # Classe para os tiros
+    def __init__(self, position, velocity): # Método construtor
+        super().__init__(position, load_sprite("bullet_1"), velocity) # Chama o construtor da classe pai
+        
+    def move(self, surface): # Método move o tiro
+        self.position = self.position + self.velocity # Calcula a nova posição do tiro
