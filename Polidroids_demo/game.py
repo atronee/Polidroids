@@ -9,7 +9,7 @@ class Polidroids: # Classe principal do jogo
     def __init__(self): # Método construtor
         self._init_pygame() # Inicializa o pygame
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) # Cria a tela do jogo
-        self.background = load_sprite("background_space", False) # Carrega a imagem de fundo
+        self.background = load_sprite("background_space", 1, False) # Carrega a imagem de fundo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         
         self.asteroids = [] # Cria uma lista de asteroides
@@ -28,7 +28,7 @@ class Polidroids: # Classe principal do jogo
         self.asteroids.append(Asteroids(position)) # Adiciona o asteroide na lista de asteroides
                 
         self.enemy = GameObject(
-            (400, 300), load_sprite("enemy_spaceship"), (0, 1)
+            (400, 300), load_sprite("enemy_spaceship", 0.1), (0, 1)
         ) # Cria uma instância da classe GameObject para o inimigo
 
     def main_loop(self): # Método principal do jogo

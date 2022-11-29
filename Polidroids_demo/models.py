@@ -30,7 +30,7 @@ class Spaceship(GameObject): # Classe para a nave
     def __init__(self, position, create_bullet_callback): # Método construtor
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
-        super().__init__(position, load_sprite("spaceship"), Vector2(0)) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite("spaceship", 0.4), Vector2(0)) # Chama o construtor da classe pai
         
     def rotate(self, clockwise=True): # Método rotaciona a nave
         sign = 1 if clockwise else -1 # Define o sinal da rotação
@@ -54,11 +54,11 @@ class Spaceship(GameObject): # Classe para a nave
         
 class Asteroids(GameObject): # Classe para os asteroides
     def __init__(self, position): # Método construtor
-        super().__init__(position, load_sprite("hexagoid"), get_random_velocity(1, 3)) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite("hexagoid", 0.5), get_random_velocity(1, 3)) # Chama o construtor da classe pai
         
 class Bullet(GameObject): # Classe para os tiros
     def __init__(self, position, velocity): # Método construtor
-        super().__init__(position, load_sprite("bullet_1"), velocity) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite("bullet_1", 0.1), velocity) # Chama o construtor da classe pai
         
     def move(self, surface): # Método move o tiro
         self.position = self.position + self.velocity # Calcula a nova posição do tiro
