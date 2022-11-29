@@ -39,6 +39,9 @@ class Spaceship(GameObject): # Classe para a nave
         
     def accelerate(self): # Método acelera a nave
         self.velocity += self.direction * self.ACCELERATION # Atualiza a velocidade da nave
+        if self.velocity.magnitude() > 10:
+            Vector2.normalize_ip(self.velocity)
+            self.velocity = 10*self.velocity
         
     def draw(self, surface): # Método desenha a nave na tela
         angle = self.direction.angle_to(UP) # Calcula o ângulo da direção da nave
