@@ -25,7 +25,7 @@ class Polidroids: # Classe principal do jogo
                 ): # Verifica se a posição do asteroide está a uma distância mínima da nave
                     break
 
-        self.asteroids.append(Asteroids(position)) # Adiciona o asteroide na lista de asteroides
+        self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
                 
         self.enemy = GameObject(
             (400, 300), load_sprite("enemy_spaceship", 0.1), (0, 1)
