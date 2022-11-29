@@ -53,8 +53,37 @@ class Spaceship(GameObject): # Classe para a nave
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         
 class Asteroids(GameObject): # Classe para os asteroides
-    def __init__(self, position): # Método construtor
-        super().__init__(position, load_sprite("hexagoid", 0.5), get_random_velocity(1, 3)) # Chama o construtor da classe pai
+    def __init__(self, position, create_asteroid_callback, size=4): # Método construtor
+        self.create_asteroid_callback = create_asteroid_callback  # Recursão para a quebra de asteroid
+        self.size = size  # "Tamanho"
+
+        size_scale = {
+            4:1,
+            3:0.75,
+            2:0.5,
+            1:0.25
+        }  # Escala em relação ao tamanho
+        scale = size_scale[self.size]
+        
+        sprite_size = {
+            4:"hexagoid",
+            3:"pentagoid",
+            2:"quadroid",
+            1:"trianguloid"
+        }  # Formato em relação ao tamanho
+        sprite_img = sprite_size[size]
+
+        sprite = rotozoom(load_sprite(sprite_img, 0.5), 0, scale)
+
+        super().__init__(position, sprite, get_random_velocity(1, 3)) # Chama o construtor da classe pai
+    
+    def split(self):
+        if self.size > 1:
+            for _ in range(2):
+                asteroid = Asteroids(
+                    self.position, self.create_asteroid_callback, self.size - 1
+                )
+                self.create_asteroid_callback(asteroid)
         
 class Bullet(GameObject): # Classe para os tiros
     def __init__(self, position, velocity): # Método construtor
