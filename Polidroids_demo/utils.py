@@ -1,6 +1,7 @@
 import random # Importa a biblioteca random
 from pygame.image import load # Importa o método load do módulo image do pygame
 from pygame.math import Vector2 # Importa o módulo math do pygame
+from pygame.mixer import Sound # Importa o módulo mixer do pygame
 import pygame
 
 def load_sprite(name, scale, with_alpha=True): # Método carrega uma imagem
@@ -26,3 +27,7 @@ def get_random_velocity(min_speed, max_speed): # Método retorna uma velocidade 
     speed = random.randint(min_speed, max_speed) # Calcula a velocidade
     angle = random.randrange(0, 360) # Calcula o ângulo
     return Vector2(speed, 0).rotate(angle) # Retorna a velocidade
+
+def load_sound(name): # Método para carregar músicas e sons do jogo
+    path = f"assets/Soundtrack/{name}.mp3" # Especifica o caminho para acessar o arquivo de áudio
+    return Sound(path) # Retorna o arquivo de áudio carregado
