@@ -1,5 +1,6 @@
 Game Songs
 Author: Luan R.
 
-1. Game_soundtrack_1 - Main gameplay song
-2. Game_soundtrack_2 - Story theme
+1. Game_soundtrack_1 - 01:51.96
+2. Game_soundtrack_2 - 00:46.57
+3. Game_soundtrack_3 - 01:16.87
