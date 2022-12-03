@@ -22,12 +22,19 @@ class GameObject: # Classe base para todos os objetos do jogo
         distance = self.position.distance_to(other_obj.position) # Calcula a distância entre os objetos
         return distance < self.radius + other_obj.radius # Retorna se a distância é menor que a soma dos raios
     
+    def set_position(self, position):
+        self.position = Vector2(position)
+    
+    def set_velocity(self, velocity):
+        self.velocity = Vector2(velocity)
+
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
     ACCELERATION = 0.25 # Define a aceleração da nave
     BULLET_SPEED = 3 # Define a velocidade do tiro
     
-    def __init__(self, position, create_bullet_callback): # Método construtor
+    def __init__(self, lifes, position, create_bullet_callback): # Método construtor
+        self.lifes = lifes # Define a quantidade de vidas
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
         super().__init__(position, load_sprite("spaceship", 0.4), Vector2(0)) # Chama o construtor da classe pai
@@ -57,6 +64,13 @@ class Spaceship(GameObject): # Classe para a nave
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
         
+    def life_lost(self):
+        self.lifes -= 1 # Decrementa a quantidade de vidas
+    
+class Life(GameObject): # Classe para a vida
+    def __init__(self, position): # Método construtor
+        super().__init__(position, load_sprite("bullet_3", 1), Vector2(0)) # Chama o construtor da classe pai
+
 class Asteroids(GameObject): # Classe para os asteroides
     def __init__(self, position, create_asteroid_callback, size=4): # Método construtor
         self.create_asteroid_callback = create_asteroid_callback  # Recursão para a quebra de asteroid

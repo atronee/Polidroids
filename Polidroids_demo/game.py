@@ -1,6 +1,6 @@
 import pygame # Importa o módulo pygame
 
-from models import GameObject, Spaceship, Asteroids # Importa as classes GameObject, Spaceship e Asteroids
+from models import GameObject, Spaceship, Asteroids, Life # Importa as classes GameObject, Spaceship e Asteroids
 from utils import get_random_position, load_sound, load_sprite # Importa os métodos get_random_position e load_sprite
 
 class Polidroids: # Classe principal do jogo
@@ -11,10 +11,10 @@ class Polidroids: # Classe principal do jogo
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) # Cria a tela do jogo
         self.background = load_sprite("background_space", 1, False) # Carrega a imagem de fundo
         self.clock = pygame.time.Clock() # Cria um objeto Clock
-        
+        self.life = []
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
-        self.spaceship = Spaceship((400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
+        self.spaceship = Spaceship(3, (400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
         
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
@@ -28,8 +28,11 @@ class Polidroids: # Classe principal do jogo
                 ): # Verifica se a posição do asteroide está a uma distância mínima da nave
                     break
 
-        self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
-                
+            self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
+        
+        for i in range(self.spaceship.lifes):
+            self.life.append(Life((30+(i * 50)+10*i, 25)))
+
         self.enemy = GameObject(
             (400, 300), load_sprite("enemy_spaceship", 0.1), (0, 1)
         ) # Cria uma instância da classe GameObject para o inimigo
@@ -76,8 +79,13 @@ class Polidroids: # Classe principal do jogo
             for asteroid in self.asteroids: # Percorre todos os asteroides
                 if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
                     self.explosion_sound.play() # Toca o som de explosão
-                    self.spaceship = None # Remove a nave
-                    break
+                    self.spaceship.life_lost() # Chama o método life_lost da nave
+                    self.life.pop(-1) # Remove uma vida da lista de vidas
+                    self.spaceship.set_position((self.background.get_size()[0]/2, self.background.get_size()[1]/2)) # Coloca a nave no centro da tela
+                    self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
+                    if self.spaceship.lifes == 0:
+                        self.spaceship = None
+                        break
         
         for bullet in self.bullets[:]: # Percorre todos os tiros
             for asteroid in self.asteroids[:]: # Percorre todos os asteroides
@@ -102,9 +110,10 @@ class Polidroids: # Classe principal do jogo
         self.clock.tick(60) # Define o FPS
         
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        game_objects = [*self.asteroids, *self.bullets] # Cria uma lista com todos os asteroides e tiros
+        game_objects = [*self.asteroids, *self.bullets, *self.life] # Cria uma lista com todos os asteroides e tiros
         
         if self.spaceship:
             game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
-            
+            game_objects.append(self.enemy) # Adiciona o inimigo na lista de objetos do jogo
+
         return game_objects # Retorna a lista de objetos do jogo
