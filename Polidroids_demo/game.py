@@ -1,7 +1,7 @@
 import pygame # Importa o módulo pygame
 
-from models import GameObject, Spaceship, Asteroids, Life # Importa as classes GameObject, Spaceship e Asteroids
-from utils import get_random_position, load_sound, load_sprite # Importa os métodos get_random_position e load_sprite
+from models import GameObject, Spaceship, Asteroids, Life # Importa as classes do módulo models
+from utils import get_random_position, load_sound, load_sprite # Importa os métodos do módulo utils
 
 class Polidroids: # Classe principal do jogo
     MIN_ASTEROID_DISTANCE = 250
@@ -15,7 +15,7 @@ class Polidroids: # Classe principal do jogo
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
         self.spaceship = Spaceship(3, (400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
-        
+        self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
         
@@ -32,10 +32,15 @@ class Polidroids: # Classe principal do jogo
         
         for i in range(self.spaceship.lifes):
             self.life.append(Life((30+(i * 50)+10*i, 25)))
-
+        
         self.enemy = GameObject(
             (400, 300), load_sprite("enemy_spaceship", 0.1), (0, 1)
         ) # Cria uma instância da classe GameObject para o inimigo
+
+    def show_score(self,x,y): # Método para mostrar o placar
+        score_font = pygame.font.Font('Assets/Font/Polybius1981.ttf', 32) # Define a fonte e o tamanho da pontuação
+        score = score_font.render("Score : " + str(self.score_value), True, (255,255,255)) # Define o texto do placar
+        self.screen.blit(score, (x, y)) # Mostra o placar na tela
 
     def main_loop(self): # Método principal do jogo
         self.song_sound.play(20) # Toca a música de fundo 20 vezes (tempo total estimado de gameplay)
@@ -94,6 +99,14 @@ class Polidroids: # Classe principal do jogo
                     self.asteroids.remove(asteroid) # Remove o asteroide
                     self.bullets.remove(bullet) # Remove o tiro
                     asteroid.split() # Divide o asteroide em 2
+                    if asteroid.size == 1:
+                        self.score_value += 100
+                    elif asteroid.size == 2:
+                        self.score_value += 50
+                    elif asteroid.size == 3:
+                        self.score_value += 20
+                    elif asteroid.size == 4:
+                        self.score_value += 10
                     break
                 
         for bullet in self.bullets[:]: # Percorre todos os tiros
@@ -105,6 +118,8 @@ class Polidroids: # Classe principal do jogo
         
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.draw(self.screen) # Desenha o objeto na tela
+        
+        self.show_score(self.screen.get_size()[0]-200, 25) # Mostra o placar na tela
         
         pygame.display.flip() # Atualiza a tela
         self.clock.tick(60) # Define o FPS
