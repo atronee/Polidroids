@@ -5,7 +5,7 @@ from States.menu import Menu
 class Gameplay(State):
     def __init__(self, game):
         State.__init__(self,game)
-        self.backgroung = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
 
     def update(self,delta_time, actions):
         # Check if the game was paused 
