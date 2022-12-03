@@ -1,6 +1,6 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
-from utils import get_random_velocity, load_sprite, wrap_position # Importa os métodos do módulo utils
+from utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
 
 UP = Vector2(0, -1) # Define a direção para cima
 
@@ -31,6 +31,7 @@ class Spaceship(GameObject): # Classe para a nave
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
         super().__init__(position, load_sprite("spaceship", 0.4), Vector2(0)) # Chama o construtor da classe pai
+        self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
         
     def rotate(self, clockwise=True): # Método rotaciona a nave
         sign = 1 if clockwise else -1 # Define o sinal da rotação
@@ -48,9 +49,10 @@ class Spaceship(GameObject): # Classe para a nave
         surface.blit(rotated_surface, blit_position) # Desenha a imagem rotacionada na tela
         
     def shoot(self):
-        bullet_velocity = self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
+        bullet_velocity = 3 * self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
         bullet = Bullet(self.position, bullet_velocity) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
+        self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
         
 class Asteroids(GameObject): # Classe para os asteroides
     def __init__(self, position): # Método construtor

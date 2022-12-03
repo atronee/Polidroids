@@ -1,7 +1,7 @@
 import pygame # Importa o módulo pygame
 
 from models import GameObject, Spaceship, Asteroids # Importa as classes GameObject, Spaceship e Asteroids
-from utils import get_random_position, load_sprite # Importa os métodos get_random_position e load_sprite
+from utils import get_random_position, load_sound, load_sprite # Importa os métodos get_random_position e load_sprite
 
 class Polidroids: # Classe principal do jogo
     MIN_ASTEROID_DISTANCE = 250
@@ -15,6 +15,9 @@ class Polidroids: # Classe principal do jogo
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
         self.spaceship = Spaceship((400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
+        
+        self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
+        self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
         
         for _ in range(6): # Cria 6 asteroides
             while True:
@@ -32,6 +35,7 @@ class Polidroids: # Classe principal do jogo
         ) # Cria uma instância da classe GameObject para o inimigo
 
     def main_loop(self): # Método principal do jogo
+        self.song_sound.play(20) # Toca a música de fundo 20 vezes (tempo total estimado de gameplay)
         while True: # Cria um loop infinito
             self._handle_input() # Trata os eventos
             self._process_game_logic() # Processa a lógica do jogo
@@ -71,12 +75,14 @@ class Polidroids: # Classe principal do jogo
         if self.spaceship: # Verifica se a nave existe
             for asteroid in self.asteroids: # Percorre todos os asteroides
                 if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
+                    self.explosion_sound.play() # Toca o som de explosão
                     self.spaceship = None # Remove a nave
                     break
         
         for bullet in self.bullets[:]: # Percorre todos os tiros
             for asteroid in self.asteroids[:]: # Percorre todos os asteroides
                 if asteroid.collides_with(bullet): # Verifica se o asteroide colidiu com o tiro
+                    self.explosion_sound.play() # Toca o som de explosão
                     self.asteroids.remove(asteroid) # Remove o asteroide
                     self.bullets.remove(bullet) # Remove o tiro
                     asteroid.split() # Divide o asteroide em 2
