@@ -30,7 +30,7 @@ class GameObject: # Classe base para todos os objetos do jogo
 
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
-    ACCELERATION = 0.25 # Define a aceleração da nave
+    ACCELERATION = 0.1 # Define a aceleração da nave
     BULLET_SPEED = 3 # Define a velocidade do tiro
     
     def __init__(self, lifes, position, create_bullet_callback): # Método construtor
@@ -69,7 +69,7 @@ class Spaceship(GameObject): # Classe para a nave
     
 class Life(GameObject): # Classe para a vida
     def __init__(self, position): # Método construtor
-        super().__init__(position, load_sprite("bullet_3", 1), Vector2(0)) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite("heart", 0.1), Vector2(0)) # Chama o construtor da classe pai
 
 class Asteroids(GameObject): # Classe para os asteroides
     def __init__(self, position, create_asteroid_callback, size=4): # Método construtor

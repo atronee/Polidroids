@@ -14,21 +14,10 @@ class Polidroids: # Classe principal do jogo
         self.life = []
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
-        self.spaceship = Spaceship(3, (400, 300), self.bullets.append) # Cria uma instância da classe Spaceship
+        self.spaceship = Spaceship(3, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
         
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
-        
-        for _ in range(6): # Cria 6 asteroides
-            while True:
-                position = get_random_position(self.screen) # Pega uma posição aleatória
-                if (
-                    position.distance_to(self.spaceship.position)
-                    > self.MIN_ASTEROID_DISTANCE
-                ): # Verifica se a posição do asteroide está a uma distância mínima da nave
-                    break
-
-            self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
         
         for i in range(self.spaceship.lifes):
             self.life.append(Life((30+(i * 50)+10*i, 25)))
@@ -74,6 +63,17 @@ class Polidroids: # Classe principal do jogo
     def _process_game_logic(self): # Método processa a lógica do jogo
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
+
+        while len(self.asteroids) < 5: # Enquanto a quantidade de asteroides for menor que 5
+            for _ in range(1): # Cria 6 asteroides
+                while True:
+                    position = get_random_position(self.screen) # Pega uma posição aleatória
+                    if (
+                        position.distance_to(self.spaceship.position)
+                        > self.MIN_ASTEROID_DISTANCE
+                    ): # Verifica se a posição do asteroide está a uma distância mínima da nave
+                        break
+                self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
             
         if self.spaceship: # Verifica se a nave existe
             for asteroid in self.asteroids: # Percorre todos os asteroides
@@ -81,8 +81,9 @@ class Polidroids: # Classe principal do jogo
                     self.explosion_sound.play() # Toca o som de explosão
                     self.spaceship.life_lost() # Chama o método life_lost da nave
                     self.life.pop(-1) # Remove uma vida da lista de vidas
-                    self.spaceship.set_position((self.background.get_size()[0]/2, self.background.get_size()[1]/2)) # Coloca a nave no centro da tela
                     self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
+                    self.spaceship.set_position((self.screen.get_size()[0]/2, self.screen.get_size()[1]/2)) # Coloca a nave no centro da tela
+                    
                     if self.spaceship.lifes == 0:
                         self.spaceship = None
                         break
