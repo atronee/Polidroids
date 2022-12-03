@@ -9,9 +9,8 @@ class Gameplay(State):
 
     def update(self,delta_time, actions):
         # Check if the game was paused 
-        if actions["start"]:
+        if actions["enter"]:
             new_state = Menu(self.game)
             new_state.enter_state()
-        self.player.update(delta_time, actions)
     def render(self, display):
         display.blit(self.background, (0,0))

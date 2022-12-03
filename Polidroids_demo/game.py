@@ -1,4 +1,5 @@
 import pygame # Importa o módulo pygame
+from States.menu import Menu
 
 from models import GameObject, Spaceship, Asteroids, Life # Importa as classes do módulo models
 from utils import get_random_position, load_sound, load_sprite # Importa os métodos do módulo utils
@@ -43,6 +44,20 @@ class Polidroids: # Classe principal do jogo
         pygame.display.set_caption("Polidroids") # Define o título da janela
 
     def _handle_input(self): # Método trata os eventos
+        if self.actions['esc']:
+            new_state = Menu(self.game)
+            new_state.enter_state()
+        if self.actions["up"]:
+            self.spaceship.accelerate() # Acelera a nave
+        if self.actions["left"]:
+            self.spaceship.rotate(clockwise=False)
+        if self.actions["right"]:
+            self.spaceship.rotate(clockwise=True)
+        if self.actions["space"]:
+            self.spaceship.shoot()
+            self.actions["space"] = False
+        self.game.reset_keys()
+        
         for event in pygame.event.get(): # Percorre todos os eventos
             if event.type == pygame.QUIT or (
                 event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
