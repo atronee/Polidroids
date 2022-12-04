@@ -70,6 +70,21 @@ class Spaceship(GameObject): # Classe para a nave
     def life_lost(self):
         self.lifes -= 1 # Decrementa a quantidade de vidas
     
+class Enemy(GameObject):
+    ENEMY_BULLET_SPEED = 2
+    def __init__(self, position, create_bullet_callback, shoot_direction):
+        super().__init__(position, load_sprite("enemy_spaceship", 0.09), get_random_velocity(1, 3)) 
+        self.shoot_direction = shoot_direction
+        self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
+        self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
+
+    def shoot(self):
+        bullet_velocity = 3 * self.shoot_direction * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro
+        bullet = Bullet(self.position, bullet_velocity, 3) # Cria um tiro
+        self.create_bullet_callback(bullet) # Chama o método para criar um tiro
+        self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
+
+
 class Life(GameObject): # Classe para a vida
     def __init__(self, position): # Método construtor
         super().__init__(position, load_sprite("heart", 0.1), Vector2(0)) # Chama o construtor da classe pai
