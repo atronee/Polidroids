@@ -1,7 +1,7 @@
 import pygame, os
 from States.state import State
 
-with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore.txt')) as f:
+with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore_history.txt')) as f:
     lines = f.readlines()
 
 last_player_score = lines[7]
