@@ -37,7 +37,7 @@ class Spaceship(GameObject): # Classe para a nave
         self.lifes = lifes # Define a quantidade de vidas
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
-        super().__init__(position, load_sprite("spaceship", 0.4), Vector2(0)) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite("spaceship", 0.2), Vector2(0)) # Chama o construtor da classe pai
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
         
     def rotate(self, clockwise=True): # Método rotaciona a nave
@@ -92,7 +92,7 @@ class Asteroids(GameObject): # Classe para os asteroides
         }  # Formato em relação ao tamanho
         sprite_img = sprite_size[size]
 
-        sprite = rotozoom(load_sprite(sprite_img, 0.5), 0, scale)
+        sprite = rotozoom(load_sprite(sprite_img, 0.3), 0, scale)
 
         super().__init__(position, sprite, get_random_velocity(1, 3)) # Chama o construtor da classe pai
     
