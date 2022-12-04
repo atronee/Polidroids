@@ -5,12 +5,13 @@ from States.title import Title
 class Game():
         def __init__(self):
             pygame.init()
+            pygame.display.set_caption("Polidroids") # Define o título da janela
             self.GAME_W,self.GAME_H = 480, 270
             self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
             self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
             self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
             self.running, self.playing = True, True
-            self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "spacebar" : False, "enter" : False}
+            self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "space" : False, "enter" : False}
             self.dt, self.prev_time = 0, 0
             self.state_stack = []
             self.load_assets()
@@ -42,7 +43,7 @@ class Game():
                     if event.key == pygame.K_ESCAPE:
                         self.actions['esc'] = True
                     if event.key == pygame.K_SPACE:
-                        self.actions['spacebar'] = True    
+                        self.actions['space'] = True    
                     if event.key == pygame.K_RETURN:
                         self.actions['enter'] = True 
                     if event.key == pygame.K_p:
@@ -62,7 +63,7 @@ class Game():
                     if event.key == pygame.K_ESCAPE:
                         self.actions['esc'] = False
                     if event.key == pygame.K_SPACE:
-                        self.actions['spacebar'] = False
+                        self.actions['space'] = False
                     if event.key == pygame.K_RETURN:
                         self.actions['enter'] = False
                     if event.key == pygame.K_p:
