@@ -25,7 +25,7 @@ class Gameplay(State):
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
-        self.enemy = Enemy((0,0), self.enemy_bullets.append, self.spaceship.direction)
+        self.enemy = Enemy((0,0), self.enemy_bullets.append)
         for i in range(self.spaceship.lifes):
             self.life.append(Life((30+(i * 50)+10*i, 25)))
         
@@ -68,7 +68,7 @@ class Gameplay(State):
                         > self.MIN_ASTEROID_DISTANCE
                     ): # Verifica se a posição do asteroide está a uma distância mínima da nave
                         break
-                self.enemy = Enemy(position, self.enemy_bullets.append, self.spaceship.direction)
+                self.enemy = Enemy(position, self.enemy_bullets.append)
             else:
                 break
 

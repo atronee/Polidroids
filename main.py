@@ -2,8 +2,9 @@ import os, time, pygame
 # Load our scenes
 from States.title import Title
 from States.gameplay import Gameplay
+from States.story import Story
 
-class Game():
+class Game(): 
         def __init__(self):
             pygame.init()
             pygame.display.set_caption("Polidroids") # Define o título da janela
@@ -79,7 +80,7 @@ class Game():
             self.state_stack[-1].render(self.game_canvas)
             # Render current state to the screen
             self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
-            if not isinstance(self.state_stack[-1], Gameplay):
+            if not isinstance(self.state_stack[-1], (Gameplay, Story)):
                 pygame.display.flip()
 
         def get_dt(self):

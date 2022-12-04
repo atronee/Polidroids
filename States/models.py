@@ -27,9 +27,7 @@ class GameObject: # Classe base para todos os objetos do jogo
     
     def set_velocity(self, velocity):
         self.velocity = Vector2(velocity)
-    
-    def get_position(self):
-        return self.position
+
 
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
@@ -72,18 +70,16 @@ class Spaceship(GameObject): # Classe para a nave
         
     def life_lost(self):
         self.lifes -= 1 # Decrementa a quantidade de vidas
-    
+
 class Enemy(GameObject):
     ENEMY_BULLET_SPEED = 2
-    def __init__(self, position, create_bullet_callback, shoot_direction):
+    def __init__(self, position, create_bullet_callback):
         super().__init__(position, load_sprite("enemy_spaceship", 0.09), get_random_velocity(1, 2)) 
-        self.shoot_direction = shoot_direction
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
-        self.vect = pygame.math.Vector2(self.get_position()[0] - self.shoot_direction[0], self.get_position()[1]-self.shoot_direction[1]).normalize()
 
     def shoot(self): # o que tem de errado aqui? 
-        bullet_velocity = self.vect * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro
+        bullet_velocity = get_random_velocity(1,2) * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro     
         bullet = Bullet(self.position, bullet_velocity, 3) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
