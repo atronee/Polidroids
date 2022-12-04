@@ -63,7 +63,7 @@ class Spaceship(GameObject): # Classe para a nave
         
     def shoot(self):
         bullet_velocity = 3 * self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
-        bullet = Bullet(self.position, bullet_velocity) # Cria um tiro
+        bullet = Bullet(self.position, bullet_velocity, self.type) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
         
@@ -108,8 +108,10 @@ class Asteroids(GameObject): # Classe para os asteroides
                 self.create_asteroid_callback(asteroid)
         
 class Bullet(GameObject): # Classe para os tiros
-    def __init__(self, position, velocity): # Método construtor
-        super().__init__(position, load_sprite("bullet_1", 0.1), velocity) # Chama o construtor da classe pai
+    def __init__(self, position, velocity, type): # Método construtor
+        self.type = type
+        self.sprite_img = ["bullet_1", "bullet_2", "bullet_3"]
+        super().__init__(position, load_sprite(self.sprite_img[self.type - 1], 0.2), velocity) # Chama o construtor da classe pai
         
     def move(self, surface): # Método move o tiro
         self.position = self.position + self.velocity # Calcula a nova posição do tiro
