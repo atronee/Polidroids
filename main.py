@@ -1,96 +1,119 @@
-import os
-import sys
-import pandas as pd
-import ntpath
-import seaborn as sns
-import matplotlib.pyplot as plt
+import os, time, pygame
+# Load our scenes
+from States.title import Title
+from States.gameplay import Gameplay
 
-head, tail = ntpath.split(os.path.realpath(__file__))
-os.chdir(head)
+class Game():
+        def __init__(self):
+            pygame.init()
+            pygame.display.set_caption("Polidroids") # Define o título da janela
+            game_icon = pygame.image.load('Docs/Polidroids.png')
+            pygame.display.set_icon(game_icon)
+            self.GAME_W,self.GAME_H = 480, 270
+            self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
+            self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
+            self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+            self.running, self.playing = True, True
+            self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "space" : False, "enter" : False}
+            self.dt, self.prev_time = 0, 0
+            self.state_stack = []
+            self.load_assets()
+            self.load_states()
 
-sys.path.insert(0, './Scrape')
-sys.path.insert(0, './Wordclouds')
+        def game_loop(self):
+            while self.playing:
+                self.get_dt()
+                self.get_events()
+                self.update()
+                self.render()
 
-import scrape as sp
-import wordclouds as wc
+        def get_events(self):
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.playing = False
+                    self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.actions['esc'] = True
+                    if event.key == pygame.K_LEFT:
+                        self.actions['left'] = True
+                    if event.key == pygame.K_RIGHT:
+                        self.actions['right'] = True
+                    if event.key == pygame.K_UP:
+                        self.actions['up'] = True
+                    if event.key == pygame.K_DOWN:
+                        self.actions['down'] = True
+                    if event.key == pygame.K_ESCAPE:
+                        self.actions['esc'] = True
+                    if event.key == pygame.K_SPACE:
+                        self.actions['space'] = True    
+                    if event.key == pygame.K_RETURN:
+                        self.actions['enter'] = True 
+                    if event.key == pygame.K_p:
+                        self.actions['pause'] = True  
 
-head, tail = ntpath.split(os.path.realpath(__file__))
-os.chdir(head)
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_ESCAPE:
+                        self.actions['esc'] = False
+                    if event.key == pygame.K_LEFT:
+                        self.actions['left'] = False
+                    if event.key == pygame.K_RIGHT:
+                        self.actions['right'] = False
+                    if event.key == pygame.K_UP:
+                        self.actions['up'] = False
+                    if event.key == pygame.K_DOWN:
+                        self.actions['down'] = False
+                    if event.key == pygame.K_ESCAPE:
+                        self.actions['esc'] = False
+                    if event.key == pygame.K_SPACE:
+                        self.actions['space'] = False
+                    if event.key == pygame.K_RETURN:
+                        self.actions['enter'] = False
+                    if event.key == pygame.K_p:
+                        self.actions['pause'] = False
 
-music_df = pd.read_csv('Scrape/Dataframes/music.csv')
+        def update(self):
+            self.state_stack[-1].update(self.dt,self.actions)
 
-print('Grupo de Perguntas 1:')
+        def render(self):
+            if len(self.state_stack) == 0:
+                exit()
+            self.state_stack[-1].render(self.game_canvas)
+            # Render current state to the screen
+            self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
+            if not isinstance(self.state_stack[-1], Gameplay):
+                pygame.display.flip()
 
-print('Músicas mais ouvidas e músicas menos ouvidas por Álbum')
-for album in music_df['Álbum'].unique():
-    subdf = music_df[music_df['Álbum'] == album]
-    sorted = subdf.sort_values(by='Popularidade', ascending=False)
-    new_sorted = sorted.reset_index(drop=True)
-    result = new_sorted[new_sorted.index < 3]
-    print('As músicas mais ouvidas do álbum ' + album + ' são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
-    sorted = subdf.sort_values(by='Popularidade', ascending=True)
-    new_sorted = sorted.reset_index(drop=True)
-    result = new_sorted[new_sorted.index < 3]
-    print('As músicas menos ouvidas do álbum ' + album + ' são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n\n', sep='')
-    
-print('Músicas mais longas e músicas mais curtas por Álbum')
-for album in music_df['Álbum'].unique():
-    subdf = music_df[music_df['Álbum'] == album]
-    sorted = subdf.sort_values(by='Duração', ascending=False)
-    new_sorted = sorted.reset_index(drop=True)
-    result = new_sorted[new_sorted.index < 3]
-    print('As músicas mais longas do álbum ' + album + ' são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
-    sorted = subdf.sort_values(by='Duração', ascending=True)
-    new_sorted = sorted.reset_index(drop=True)
-    result = new_sorted[new_sorted.index < 3]
-    print('As músicas mais curtas do álbum ' + album + ' são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n\n', sep='')
+        def get_dt(self):
+            now = time.time()
+            self.dt = now - self.prev_time
+            self.prev_time = now
 
-print('Músicas mais ouvidas e músicas menos ouvidas [em toda a história da banda ou artista]')
-sorted = music_df.sort_values(by='Popularidade', ascending=False)
-new_sorted = sorted.reset_index(drop=True)
-result = new_sorted[new_sorted.index < 3]
-print('As músicas mais ouvidas da história da banda são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
-sorted = music_df.sort_values(by='Popularidade', ascending=True)
-new_sorted = sorted.reset_index(drop=True)
-result = new_sorted[new_sorted.index < 3]
-print('As músicas menos ouvidas da história da banda são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
+        def draw_text(self, surface, text, color, x, y, size):
+            self.font = pygame.font.Font(os.path.join(self.font_dir, "Polybius1981.ttf"), size)
+            text_surface = self.font.render(text, True, color)
+            #text_surface.set_colorkey((0,0,0))
+            text_rect = text_surface.get_rect()
+            text_rect.center = (x, y)
+            surface.blit(text_surface, text_rect)
 
-print('Músicas mais longas e músicas mais curtas [em toda a história da banda ou artista]')
-sorted = music_df.sort_values(by='Duração', ascending=False)
-new_sorted = sorted.reset_index(drop=True)
-result = new_sorted[new_sorted.index < 3]
-print('As músicas mais longas da história da banda são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
-sorted = music_df.sort_values(by='Duração', ascending=True)
-new_sorted = sorted.reset_index(drop=True)
-result = new_sorted[new_sorted.index < 3]
-print('As músicas mais curtas da história da banda são:\n' + result['Faixas'][0] + ', ' + result['Faixas'][1] + ', ' + result['Faixas'][2] + '\n', sep='')
+        def load_assets(self):
+            # Create pointers to directories 
+            self.assets_dir = os.path.join("Assets")
+            self.sprite_dir = os.path.join(self.assets_dir, "Sprites")
+            self.font_dir = os.path.join(self.assets_dir, "Font")
+            self.font= pygame.font.Font(os.path.join(self.font_dir, "Polybius1981.ttf"), 40)
 
-#Álbuns mais premiados [https://twiftnews.com/lifestyle/top-6-most-prestigious-music-awards/]
-#Existe alguma relação entre a duração da música e sua popularidade?
+        def load_states(self):
+            self.title_screen = Title(self)
+            self.state_stack.append(self.title_screen)
 
-
-print('Grupo de Perguntas 2:')
-
-#print('Quais são as palavras mais comuns nos títulos dos Álbuns?')
-#titles_list = music_df['Álbum'].unique()
-#dicio = {}
-#for title in titles_list:
-#    for word in title.split(" "):
-#        val = dicio.get(word.lower(), 0)
-#        dicio[word.lower()] = val + 1
-#dicio.values()
-
-#Quais são as palavras mais comuns nos títulos das músicas?
-#Quais são as palavras mais comuns nas letras das músicas, por Álbum?
-#Quais são as palavras mais comuns nas letras das músicas, em toda a discografia?
-#O título de um álbum é tema recorrente nas letras?
-#O título de uma música é tema recorrente nas letras?
+        def reset_keys(self):
+            for action in self.actions:
+                self.actions[action] = False
 
 
-#Grupo de Perguntas 3:
-
-#Compositor (não integrante da banda) mais comum;
-#Música mais popular por compositor;
-#Ano em que a banda recebeu mais prêmios.
-sns.scatterplot(music_df[music_df['Álbum'] == 'Appetite for Destruction'], y='Duração', x='Popularidade')
-plt.show()
+if __name__ == "__main__":
+    g = Game()
+    while g.running:
+        g.game_loop()

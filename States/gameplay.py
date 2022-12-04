@@ -1,21 +1,26 @@
-import pygame # Importa o módulo pygame
-#from States.menu import Menu
+import pygame, os
+from States.state import State
+from States.menu import Menu
+from States.utils import get_random_position, load_sound, load_sprite
+from States.models import GameObject, Spaceship, Asteroids, Life
+from States.game_over import GameOver
 
-from models import GameObject, Spaceship, Asteroids, Life # Importa as classes do módulo models
-from utils import get_random_position, load_sound, load_sprite # Importa os métodos do módulo utils
-
-class Polidroids: # Classe principal do jogo
+class Gameplay(State):
     MIN_ASTEROID_DISTANCE = 250
     
-    def __init__(self): # Método construtor
-        self._init_pygame() # Inicializa o pygame
-        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) # Cria a tela do jogo
-        self.background = load_sprite("background_space", 1, False) # Carrega a imagem de fundo
+    def __init__(self, game, nave):
+        State.__init__(self,game)
+        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.GAME_W,self.GAME_H = 480, 270
+        self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
+        self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+        self.nave = nave
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         self.life = []
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
-        self.spaceship = Spaceship(3, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
+        self.spaceship = Spaceship(self.nave, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
@@ -32,53 +37,23 @@ class Polidroids: # Classe principal do jogo
         score = score_font.render("Score : " + str(self.score_value), True, (255,255,255)) # Define o texto do placar
         self.screen.blit(score, (x, y)) # Mostra o placar na tela
 
-    def main_loop(self): # Método principal do jogo
-        self.song_sound.play(20) # Toca a música de fundo 20 vezes (tempo total estimado de gameplay)
-        while True: # Cria um loop infinito
-            self._handle_input() # Trata os eventos
-            self._process_game_logic() # Processa a lógica do jogo
-            self._draw() # Desenha na tela
+    def update(self, delta_time, actions):
+        # Check if the game was paused 
+        if actions["enter"]:
+            new_state = Menu(self.game)
+            new_state.enter_state()
+        if actions["up"]:
+            self.spaceship.accelerate() # Acelera a nave
+        if actions["left"]:
+            self.spaceship.rotate(clockwise=False)
+        if actions["right"]:
+            self.spaceship.rotate(clockwise=True)
+        if actions["space"]:
+            self.spaceship.shoot()
+            actions["space"] = False
 
-    def _init_pygame(self): # Método inicializa o pygame
-        pygame.init() # Inicializa o pygame
-        pygame.display.set_caption("Polidroids") # Define o título da janela
+        self._process_game_logic() # Processa a lógica do jogo
 
-    def _handle_input(self): # Método trata os eventos
-        # if self.actions['esc']:
-        #     new_state = Menu(self.game)
-        #     new_state.enter_state()
-        # if self.actions["up"]:
-        #     self.spaceship.accelerate() # Acelera a nave
-        # if self.actions["left"]:
-        #     self.spaceship.rotate(clockwise=False)
-        # if self.actions["right"]:
-        #     self.spaceship.rotate(clockwise=True)
-        # if self.actions["space"]:
-        #     self.spaceship.shoot()
-        #     self.actions["space"] = False
-        # self.game.reset_keys()
-        
-        for event in pygame.event.get(): # Percorre todos os eventos
-            if event.type == pygame.QUIT or (
-                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
-            ): # Verifica se o evento é de fechar a janela ou apertar a tecla ESC
-                pygame.quit() # Fecha o jogo
-            elif (
-                self.spaceship
-                and event.type == pygame.KEYDOWN
-                and event.key == pygame.K_SPACE
-            ): # Verifica se a nave existe e se o evento é de apertar a tecla ESPAÇO
-                self.spaceship.shoot() # Chama o método shoot da nave
-                
-        is_key_pressed = pygame.key.get_pressed() # Pega todas as teclas pressionadas
-
-        if self.spaceship: # Verifica se a nave existe
-            if is_key_pressed[pygame.K_RIGHT]: # Verifica se a tecla direita está pressionada
-                self.spaceship.rotate(clockwise=True) # Rotaciona a nave no sentido horário
-            elif is_key_pressed[pygame.K_LEFT]: # Verifica se a tecla esquerda está pressionada
-                self.spaceship.rotate(clockwise=False) # Rotaciona a nave no sentido anti-horário
-            if is_key_pressed[pygame.K_UP]: # Verifica se a tecla para cima está pressionada
-                self.spaceship.accelerate() # Acelera a nave
 
     def _process_game_logic(self): # Método processa a lógica do jogo
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
@@ -105,8 +80,8 @@ class Polidroids: # Classe principal do jogo
                     self.spaceship.set_position((self.screen.get_size()[0]/2, self.screen.get_size()[1]/2)) # Coloca a nave no centro da tela
                     
                     if self.spaceship.lifes == 0:
-                        self.spaceship = None
-                        break
+                        new_state = GameOver(self.game, self.score_value)
+                        new_state.enter_state()
         
         for bullet in self.bullets[:]: # Percorre todos os tiros
             for asteroid in self.asteroids[:]: # Percorre todos os asteroides
@@ -128,8 +103,17 @@ class Polidroids: # Classe principal do jogo
         for bullet in self.bullets[:]: # Percorre todos os tiros
             if not self.screen.get_rect().collidepoint(bullet.position): # Verifica se o tiro saiu da tela
                 self.bullets.remove(bullet) # Remove o tiro da lista de tiros
+    
+    def _get_game_objects(self): # Método retorna todos os objetos do jogo
+        game_objects = [*self.asteroids, *self.bullets, *self.life] # Cria uma lista com todos os asteroides e tiros
+        
+        if self.spaceship:
+            game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
+            game_objects.append(self.enemy) # Adiciona o inimigo na lista de objetos do jogo
 
-    def _draw(self): # Método desenha na tela
+        return game_objects # Retorna a lista de objetos do jogo
+    
+    def render(self, display): # Método desenha na tela
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
         
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
@@ -139,12 +123,3 @@ class Polidroids: # Classe principal do jogo
         
         pygame.display.flip() # Atualiza a tela
         self.clock.tick(60) # Define o FPS
-        
-    def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        game_objects = [*self.asteroids, *self.bullets, *self.life] # Cria uma lista com todos os asteroides e tiros
-        
-        if self.spaceship:
-            game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
-            game_objects.append(self.enemy) # Adiciona o inimigo na lista de objetos do jogo
-
-        return game_objects # Retorna a lista de objetos do jogo
