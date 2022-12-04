@@ -1,6 +1,7 @@
 import os, time, pygame
 # Load our scenes
 from States.title import Title
+from States.gameplay import Gameplay
 
 class Game():
         def __init__(self):
@@ -78,7 +79,8 @@ class Game():
             self.state_stack[-1].render(self.game_canvas)
             # Render current state to the screen
             self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
-            pygame.display.flip()
+            if not isinstance(self.state_stack[-1], Gameplay):
+                pygame.display.flip()
 
         def get_dt(self):
             now = time.time()
