@@ -2,7 +2,7 @@ import pygame, os
 from States.state import State
 from States.menu import Menu
 from States.utils import get_random_position, load_sound, load_sprite
-from States.models import GameObject, Spaceship, Asteroids, Life
+from States.models import GameObject, Spaceship, Asteroids, Life, Enemy
 from States.game_over import GameOver
 
 class Gameplay(State):
@@ -20,18 +20,15 @@ class Gameplay(State):
         self.life = []
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
+        self.enemy_bullets = []
         self.spaceship = Spaceship(self.nave, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
-        
+        self.enemy = []
         for i in range(self.spaceship.lifes):
             self.life.append(Life((30+(i * 50)+10*i, 25)))
         
-        self.enemy = GameObject(
-            (400, 300), load_sprite("enemy_spaceship", 0.1), (0, 1)
-        ) # Cria uma instância da classe GameObject para o inimigo
-
     def show_score(self,x,y): # Método para mostrar o placar
         score_font = pygame.font.Font('Assets/Font/Polybius1981.ttf', 32) # Define a fonte e o tamanho da pontuação
         score = score_font.render("Score : " + str(self.score_value), True, (255,255,255)) # Define o texto do placar
@@ -59,8 +56,8 @@ class Gameplay(State):
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
 
-        while len(self.asteroids) < 5: # Enquanto a quantidade de asteroides for menor que 5
-            for _ in range(1): # Cria 6 asteroides
+        while len(self.enemy)<1:
+            if len(self.asteroids)==7:
                 while True:
                     position = get_random_position(self.screen) # Pega uma posição aleatória
                     if (
@@ -68,7 +65,19 @@ class Gameplay(State):
                         > self.MIN_ASTEROID_DISTANCE
                     ): # Verifica se a posição do asteroide está a uma distância mínima da nave
                         break
-                self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
+                self.enemy.append(Enemy(position, self.enemy_bullets, self.spaceship.position))
+            else:
+                break
+
+        while len(self.asteroids) < 5: # Enquanto a quantidade de asteroides for menor que 5
+            while True:
+                position = get_random_position(self.screen) # Pega uma posição aleatória
+                if (
+                    position.distance_to(self.spaceship.position)
+                    > self.MIN_ASTEROID_DISTANCE
+                ): # Verifica se a posição do asteroide está a uma distância mínima da nave
+                    break
+            self.asteroids.append(Asteroids(position, self.asteroids.append)) # Adiciona o asteroide na lista de asteroides
             
         if self.spaceship: # Verifica se a nave existe
             for asteroid in self.asteroids: # Percorre todos os asteroides
@@ -78,18 +87,18 @@ class Gameplay(State):
                     if self.spaceship.lifes == 0:
                         new_state = GameOver(self.game, self.score_value)
                         new_state.enter_state()
-                        
+
                     self.life.pop() # Remove uma vida da lista de vidas
                     self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
                     for asteroid in self.asteroids:
-                            while True:
-                                position = get_random_position(self.screen)
-                                if (
-                                    position.distance_to(asteroid.position)
-                                    > self.MIN_ASTEROID_DISTANCE
-                                ):
-                                    break
-                            self.spaceship.position = position
+                        while True:
+                            position = get_random_position(self.screen)
+                            if (
+                                position.distance_to(asteroid.position)
+                                > self.MIN_ASTEROID_DISTANCE
+                            ):
+                                break
+                        self.spaceship.position = position
                     
         
         for bullet in self.bullets[:]: # Percorre todos os tiros
@@ -114,11 +123,10 @@ class Gameplay(State):
                 self.bullets.remove(bullet) # Remove o tiro da lista de tiros
     
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        game_objects = [*self.asteroids, *self.bullets, *self.life] # Cria uma lista com todos os asteroides e tiros
+        game_objects = [*self.asteroids, *self.bullets, *self.life, *self.enemy] # Cria uma lista com todos os asteroides e tiros
         
         if self.spaceship:
             game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
-            game_objects.append(self.enemy) # Adiciona o inimigo na lista de objetos do jogo
 
         return game_objects # Retorna a lista de objetos do jogo
     
