@@ -8,18 +8,19 @@ from States.game_over import GameOver
 class Gameplay(State):
     MIN_ASTEROID_DISTANCE = 250
     
-    def __init__(self, game):
+    def __init__(self, game, nave):
         State.__init__(self,game)
         self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
         self.GAME_W,self.GAME_H = 480, 270
         self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
         self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
+        self.nave = nave
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         self.life = []
         self.asteroids = [] # Cria uma lista de asteroides
         self.bullets = [] # Cria uma lista de tiros
-        self.spaceship = Spaceship(3, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
+        self.spaceship = Spaceship(self.nave, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay

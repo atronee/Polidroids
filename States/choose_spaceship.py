@@ -39,10 +39,10 @@ class ChooseSpaceship(State):
 
 	def transition_state(self):
 		if self.options[self.index] == "spaceship":
-			new_state = Gameplay(self.game)
+			new_state = Gameplay(self.game, 1)
 			new_state.enter_state()
 		elif self.options[self.index] == "spaceship_2":
-			new_state = Gameplay(self.game)
+			new_state = Gameplay(self.game, 2)
 			new_state.enter_state()
 
 	def update_cursor(self, actions):
