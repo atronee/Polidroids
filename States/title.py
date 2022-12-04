@@ -1,0 +1,45 @@
+import pygame, os
+from States.state import State
+from States.choose_spaceship import ChooseSpaceship
+from States.menu import Menu
+
+class Title(State):
+    def __init__(self, game):
+        State.__init__(self, game)
+        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.options = {0 :"Novo Jogo", 1 : "Configurações"}
+        self.index = 0
+        self.cursor_img = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "cursor.png"))
+        self.cursor_rect = self.cursor_img.get_rect()
+        self.cursor_pos_y = self.game.GAME_H/1.25 - 40
+        self.cursor_rect.x, self.cursor_rect.y = self.game.GAME_W/2 - 25, self.cursor_pos_y
+
+    def update(self, delta_time, actions):
+        self.update_cursor(actions)      
+        if actions["enter"]:
+            self.transition_state()
+        if actions["esc"]:
+            self.exit_state()
+        self.game.reset_keys()
+
+    def render(self, display):
+        display.blit(self.background, (0,0))
+        self.game.draw_text(display, "Polidroids", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2.35, 40)
+        self.game.draw_text(display, "Novo Jogo", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/1.25 - 50, 20)
+        self.game.draw_text(display, "Configurações", (255,255,255), self.game.GAME_W/2, (self.game.GAME_H/1.25 - 20), 20)
+        display.blit(self.cursor_img, self.cursor_rect)
+
+    def transition_state(self):
+        if self.options[self.index] == "Novo Jogo": 
+            new_state = ChooseSpaceship(self.game)
+            new_state.enter_state()
+        elif self.options[self.index] == "Configurações": 
+            new_state = Menu(self.game)
+            new_state.enter_state()
+
+    def update_cursor(self, actions):
+        if actions['down']:
+            self.index = (self.index + 1) % len(self.options)
+        elif actions['up']:
+            self.index = (self.index - 1) % len(self.options)
+        self.cursor_rect.y = self.cursor_pos_y + (self.index * 30)

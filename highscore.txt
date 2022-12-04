@@ -1,0 +1,8 @@
+Luan
+920
+Otávio
+900
+Gabriel
+880
+Score do último jogador
+000
