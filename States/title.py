@@ -19,6 +19,8 @@ class Title(State):
         if actions["enter"]:
             self.transition_state()
         if actions["esc"]:
+            if len(self.game.state_stack) == 1:
+                pygame.QUIT
             self.exit_state()
         self.game.reset_keys()
 

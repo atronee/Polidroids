@@ -73,6 +73,8 @@ class Game():
             self.state_stack[-1].update(self.dt,self.actions)
 
         def render(self):
+            if len(self.state_stack) == 0:
+                exit()
             self.state_stack[-1].render(self.game_canvas)
             # Render current state to the screen
             self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
