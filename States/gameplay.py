@@ -75,13 +75,22 @@ class Gameplay(State):
                 if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
                     self.explosion_sound.play() # Toca o som de explosão
                     self.spaceship.life_lost() # Chama o método life_lost da nave
-                    self.life.pop(-1) # Remove uma vida da lista de vidas
-                    self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
-                    self.spaceship.set_position((self.screen.get_size()[0]/2, self.screen.get_size()[1]/2)) # Coloca a nave no centro da tela
-                    
                     if self.spaceship.lifes == 0:
                         new_state = GameOver(self.game, self.score_value)
                         new_state.enter_state()
+                        
+                    self.life.pop() # Remove uma vida da lista de vidas
+                    self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
+                    for asteroid in self.asteroids:
+                            while True:
+                                position = get_random_position(self.screen)
+                                if (
+                                    position.distance_to(asteroid.position)
+                                    > self.MIN_ASTEROID_DISTANCE
+                                ):
+                                    break
+                            self.spaceship.position = position
+                    
         
         for bullet in self.bullets[:]: # Percorre todos os tiros
             for asteroid in self.asteroids[:]: # Percorre todos os asteroides
