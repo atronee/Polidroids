@@ -13,7 +13,7 @@ class GameOver(State):
         self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
         
     def update(self, delta_time, actions):
-        if actions["esc"]:
+        if actions["esc"] or actions["enter"]:
             self.transition_state()
         self.game.reset_keys()
 
