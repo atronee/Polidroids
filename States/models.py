@@ -1,6 +1,6 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
-from utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
+from States.utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
 
 UP = Vector2(0, -1) # Define a direção para cima
 
@@ -30,14 +30,17 @@ class GameObject: # Classe base para todos os objetos do jogo
 
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
-    ACCELERATION = 0.1 # Define a aceleração da nave
     BULLET_SPEED = 3 # Define a velocidade do tiro
     
-    def __init__(self, lifes, position, create_bullet_callback): # Método construtor
-        self.lifes = lifes # Define a quantidade de vidas
+    def __init__(self, type, position, create_bullet_callback): # Método construtor
+        self.type = type
+        self.lifes = 7-2*self.type # Define a quantidade de vidas
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
-        super().__init__(position, load_sprite("spaceship", 0.4), Vector2(0)) # Chama o construtor da classe pai
+        self.acceleration = self.type/10
+        self.max_velocity = 5 + 5*self.type
+        sprites_img = ["spaceship", "spaceship_2"]
+        super().__init__(position, load_sprite(sprites_img[self.type - 1], 0.2), Vector2(0)) # Chama o construtor da classe pai
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
         
     def rotate(self, clockwise=True): # Método rotaciona a nave
@@ -46,10 +49,10 @@ class Spaceship(GameObject): # Classe para a nave
         self.direction.rotate_ip(angle) # Rotaciona a direção da nave
         
     def accelerate(self): # Método acelera a nave
-        self.velocity += self.direction * self.ACCELERATION # Atualiza a velocidade da nave
-        if self.velocity.magnitude() > 10:
+        self.velocity += self.direction * self.acceleration # Atualiza a velocidade da nave
+        if self.velocity.magnitude() > self.max_velocity:
             Vector2.normalize_ip(self.velocity)
-            self.velocity = 10*self.velocity
+            self.velocity = self.max_velocity*self.velocity
         
     def draw(self, surface): # Método desenha a nave na tela
         angle = self.direction.angle_to(UP) # Calcula o ângulo da direção da nave
@@ -92,7 +95,7 @@ class Asteroids(GameObject): # Classe para os asteroides
         }  # Formato em relação ao tamanho
         sprite_img = sprite_size[size]
 
-        sprite = rotozoom(load_sprite(sprite_img, 0.5), 0, scale)
+        sprite = rotozoom(load_sprite(sprite_img, 0.3), 0, scale)
 
         super().__init__(position, sprite, get_random_velocity(1, 3)) # Chama o construtor da classe pai
     
