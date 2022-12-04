@@ -25,7 +25,7 @@ class Gameplay(State):
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
         self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
-        self.enemy = []
+        self.enemy = Enemy((0,0), self.enemy_bullets.append, self.spaceship.direction)
         for i in range(self.spaceship.lifes):
             self.life.append(Life((30+(i * 50)+10*i, 25)))
         
@@ -51,12 +51,15 @@ class Gameplay(State):
 
         self._process_game_logic() # Processa a lógica do jogo
 
-
     def _process_game_logic(self): # Método processa a lógica do jogo
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
+        
+        if self.enemy:     
+            if pygame.time.get_ticks() % 1000 == 0:
+                self.enemy.shoot()
 
-        while len(self.enemy)<1:
+        while self.enemy == None:
             if len(self.asteroids)==7:
                 while True:
                     position = get_random_position(self.screen) # Pega uma posição aleatória
@@ -65,7 +68,7 @@ class Gameplay(State):
                         > self.MIN_ASTEROID_DISTANCE
                     ): # Verifica se a posição do asteroide está a uma distância mínima da nave
                         break
-                self.enemy.append(Enemy(position, self.enemy_bullets, self.spaceship.position))
+                self.enemy = Enemy(position, self.enemy_bullets.append, self.spaceship.direction)
             else:
                 break
 
@@ -117,16 +120,70 @@ class Gameplay(State):
                     elif asteroid.size == 4:
                         self.score_value += 10
                     break
-                
+        
+        for bullet in self.bullets[:]:
+            if self.enemy:
+                if bullet.collides_with(self.enemy):
+                    self.explosion_sound.play()
+                    self.bullets.remove(bullet)
+                    self.enemy = None
+                    self.score_value += 500
+        
+
+        if self.enemy and self.spaceship:
+            if self.enemy.collides_with(self.spaceship):
+                self.explosion_sound.play()
+                self.spaceship.life_lost()
+                if self.spaceship.lifes == 0:
+                    new_state = GameOver(self.game, self.score_value)
+                    new_state.enter_state()
+                self.life.pop()
+                self.spaceship.set_velocity((0, 0))
+                for asteroid in self.asteroids:
+                    while True:
+                        position = get_random_position(self.screen)
+                        if (
+                            position.distance_to(asteroid.position)
+                            > self.MIN_ASTEROID_DISTANCE
+                        ):
+                            break
+                    self.spaceship.position = position
+
+        for bullet in self.enemy_bullets[:]: # Percorre todos os tiros
+            if bullet.collides_with(self.spaceship): # Verifica se uma bala inimiga colidiu com a nave
+                self.explosion_sound.play() # Toca o som de explosão
+                self.spaceship.life_lost() # Chama o método life_lost da nave
+                self.enemy_bullets.remove(bullet) # Remove o tiro
+                if self.spaceship.lifes == 0:
+                    new_state = GameOver(self.game, self.score_value)
+                    new_state.enter_state()
+                self.life.pop() # Remove uma vida da lista de vidas
+                self.spaceship.set_velocity((0, 0)) # Zera a velocidade da nave
+                for asteroid in self.asteroids:
+                    while True:
+                        position = get_random_position(self.screen)
+                        if (
+                            position.distance_to(asteroid.position)
+                            > self.MIN_ASTEROID_DISTANCE
+                        ):
+                            break
+                    self.spaceship.position = position
+
         for bullet in self.bullets[:]: # Percorre todos os tiros
             if not self.screen.get_rect().collidepoint(bullet.position): # Verifica se o tiro saiu da tela
                 self.bullets.remove(bullet) # Remove o tiro da lista de tiros
+        
+        for bullet in self.enemy_bullets[:]: # Percorre todos os tiros
+            if not self.screen.get_rect().collidepoint(bullet.position): # Verifica se o tiro saiu da tela
+                self.enemy_bullets.remove(bullet) # Remove o tiro da lista de tiros
     
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
-        game_objects = [*self.asteroids, *self.bullets, *self.life, *self.enemy] # Cria uma lista com todos os asteroides e tiros
+        game_objects = [*self.asteroids, *self.bullets, *self.life, *self.enemy_bullets] # Cria uma lista com todos os asteroides e tiros
         
         if self.spaceship:
             game_objects.append(self.spaceship) # Adiciona a nave na lista de objetos do jogo
+        if self.enemy:
+            game_objects.append(self.enemy)
 
         return game_objects # Retorna a lista de objetos do jogo
     

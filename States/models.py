@@ -1,7 +1,7 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
 from States.utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
-
+import pygame
 UP = Vector2(0, -1) # Define a direção para cima
 
 class GameObject: # Classe base para todos os objetos do jogo
@@ -27,6 +27,9 @@ class GameObject: # Classe base para todos os objetos do jogo
     
     def set_velocity(self, velocity):
         self.velocity = Vector2(velocity)
+    
+    def get_position(self):
+        return self.position
 
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
@@ -38,7 +41,7 @@ class Spaceship(GameObject): # Classe para a nave
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
         self.acceleration = self.type/10
-        self.max_velocity = 5 + 5*self.type
+        self.max_velocity = 5 + 3*self.type
         sprites_img = ["spaceship", "spaceship_2"]
         super().__init__(position, load_sprite(sprites_img[self.type - 1], 0.2), Vector2(0)) # Chama o construtor da classe pai
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
@@ -73,13 +76,14 @@ class Spaceship(GameObject): # Classe para a nave
 class Enemy(GameObject):
     ENEMY_BULLET_SPEED = 2
     def __init__(self, position, create_bullet_callback, shoot_direction):
-        super().__init__(position, load_sprite("enemy_spaceship", 0.09), get_random_velocity(1, 3)) 
+        super().__init__(position, load_sprite("enemy_spaceship", 0.09), get_random_velocity(1, 2)) 
         self.shoot_direction = shoot_direction
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
+        self.vect = pygame.math.Vector2(self.get_position()[0] - self.shoot_direction[0], self.get_position()[1]-self.shoot_direction[1]).normalize()
 
-    def shoot(self):
-        bullet_velocity = 3 * self.shoot_direction * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro
+    def shoot(self): # o que tem de errado aqui? 
+        bullet_velocity = self.vect * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro
         bullet = Bullet(self.position, bullet_velocity, 3) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
