@@ -15,7 +15,7 @@ class Game():
             self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
             self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
             self.running, self.playing = True, True
-            self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "space" : False, "enter" : False}
+            self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "space" : False, "enter" : False, "backspace": False}
             self.dt, self.prev_time = 0, 0
             self.state_stack = []
             self.load_assets()
@@ -49,7 +49,9 @@ class Game():
                     if event.key == pygame.K_SPACE:
                         self.actions['space'] = True    
                     if event.key == pygame.K_RETURN:
-                        self.actions['enter'] = True 
+                        self.actions['enter'] = True
+                    if event.key == pygame.K_BACKSPACE:
+                        self.actions['backspace'] = True
                     if event.key == pygame.K_p:
                         self.actions['pause'] = True  
 
@@ -70,6 +72,8 @@ class Game():
                         self.actions['space'] = False
                     if event.key == pygame.K_RETURN:
                         self.actions['enter'] = False
+                    if event.key == pygame.K_BACKSPACE:
+                        self.actions['backspace'] = False
                     if event.key == pygame.K_p:
                         self.actions['pause'] = False
 
