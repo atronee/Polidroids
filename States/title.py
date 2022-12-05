@@ -2,19 +2,21 @@ import pygame, os
 from States.state import State
 from States.choose_spaceship import ChooseSpaceship
 from States.menu import Menu
+from States.utils import load_sound, load_sprite
 
 class Title(State):
     def __init__(self, game):
         State.__init__(self, game)
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 1)
         self.options = {0 :"Novo Jogo", 1 : "Configurações"}
         self.index = 0
         self.cursor_img = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "cursor.png"))
         self.cursor_rect = self.cursor_img.get_rect()
         self.cursor_pos_y = self.game.GAME_H/1.25 - 40
         self.cursor_rect.x, self.cursor_rect.y = self.game.GAME_W/2 - 25, self.cursor_pos_y
+        self.soundtrack = load_sound("Game_soundtrack_1")
 
-    def update(self, delta_time, actions):
+    def update(self, actions):
         self.update_cursor(actions)      
         if actions["enter"]:
             self.transition_state()
@@ -25,6 +27,7 @@ class Title(State):
         self.game.reset_keys()
 
     def render(self, display):
+        self.soundtrack.play()
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Polidroids", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2.35, 40)
         self.game.draw_text(display, "Novo Jogo", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/1.25 - 50, 20)
@@ -33,7 +36,7 @@ class Title(State):
 
     def transition_state(self):
         if self.options[self.index] == "Novo Jogo": 
-            new_state = ChooseSpaceship(self.game)
+            new_state = ChooseSpaceship(self.game, self.soundtrack)
             new_state.enter_state()
         elif self.options[self.index] == "Configurações": 
             new_state = Menu(self.game)

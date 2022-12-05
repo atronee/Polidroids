@@ -2,10 +2,12 @@ import pygame, os
 from States.state import State
 from States.gameplay import Gameplay
 from States.story import Story
+from States.utils import load_sprite 
+
 class ChooseSpaceship(State):
-	def __init__(self, game):
+	def __init__(self, game, soundtrack):
 		State.__init__(self, game)
-		self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+		self.background = load_sprite("background_space", 1)
 		self.spaceship = pygame.transform.scale(pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "spaceship.png")), (50, 73))
 		self.five_hearts = pygame.transform.scale(pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "five_hearts.png")), (50, 10))
 		self.spaceship_2 = pygame.transform.scale(pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "spaceship_2.png")), (50, 50))
@@ -17,8 +19,9 @@ class ChooseSpaceship(State):
 		self.cursor_pos_x = self.game.GAME_W/2 - 25
 		self.cursor_pos_y = self.game.GAME_H/1.25 - 20
 		self.cursor_rect.x, self.cursor_rect.y = self.cursor_pos_x, self.cursor_pos_y
+		self.soundtrack = soundtrack
 
-	def update(self, delta_time, actions):
+	def update(self, actions):
 		self.update_cursor(actions)
 		if actions["enter"]:
 			self.transition_state()
@@ -39,9 +42,11 @@ class ChooseSpaceship(State):
 
 	def transition_state(self):
 		if self.options[self.index] == "spaceship":
+			self.soundtrack.stop()
 			new_state = Story(self.game, 1)
 			new_state.enter_state()
 		elif self.options[self.index] == "spaceship_2":
+			self.soundtrack.stop()
 			new_state = Story(self.game, 2)
 			new_state.enter_state()
 

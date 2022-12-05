@@ -1,6 +1,7 @@
 import pygame, os
 from States.state import State
 from States.new_highscore import NewHighscore
+from States.utils import load_sprite 
 
 with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore_history.txt')) as f:
     lines = f.readlines()
@@ -11,9 +12,9 @@ class GameOver(State):
     def __init__(self, game, score_value):
         State.__init__(self, game)
         self.score_value = score_value
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 1)
         
-    def update(self, delta_time, actions):
+    def update(self, actions):
         if actions["esc"] or actions["enter"]:
             self.transition_state()
         self.game.reset_keys()
