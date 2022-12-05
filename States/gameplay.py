@@ -4,13 +4,14 @@ from States.menu import Menu
 from States.utils import get_random_position, load_sound, load_sprite
 from States.models import GameObject, Spaceship, Asteroids, Life, Enemy
 from States.game_over import GameOver
-from States.utils import load_sound
+from States.utils import load_sound, load_sprite 
+
 class Gameplay(State):
     MIN_ASTEROID_DISTANCE = 250
     
     def __init__(self, game, nave):
         State.__init__(self,game)
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 0.6, True)
         self.GAME_W,self.GAME_H = 480, 270
         self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
         self.game_canvas = pygame.Surface((self.GAME_W,self.GAME_H))
@@ -36,7 +37,7 @@ class Gameplay(State):
         score = score_font.render("Score : " + str(self.score_value), True, (255,255,255)) # Define o texto do placar
         self.screen.blit(score, (x, y)) # Mostra o placar na tela
 
-    def update(self, delta_time, actions):
+    def update(self, actions):
         # Check if the game was paused 
         if actions["enter"]:
             self.soundtrack.stop()

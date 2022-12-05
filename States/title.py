@@ -2,12 +2,12 @@ import pygame, os
 from States.state import State
 from States.choose_spaceship import ChooseSpaceship
 from States.menu import Menu
-from States.utils import load_sound
+from States.utils import load_sound, load_sprite
 
 class Title(State):
     def __init__(self, game):
         State.__init__(self, game)
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 1)
         self.options = {0 :"Novo Jogo", 1 : "Configurações"}
         self.index = 0
         self.cursor_img = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "cursor.png"))
@@ -16,7 +16,7 @@ class Title(State):
         self.cursor_rect.x, self.cursor_rect.y = self.game.GAME_W/2 - 25, self.cursor_pos_y
         self.soundtrack = load_sound("Game_soundtrack_1")
 
-    def update(self, delta_time, actions):
+    def update(self, actions):
         self.update_cursor(actions)      
         if actions["enter"]:
             self.transition_state()

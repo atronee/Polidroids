@@ -1,9 +1,8 @@
-import os, time, pygame
-# Load our scenes
+import os, pygame
 from States.title import Title
 from States.gameplay import Gameplay
 from States.story import Story
-
+from States.utils import load_sprite
 class Game(): 
         def __init__(self):
             pygame.init()
@@ -16,14 +15,13 @@ class Game():
             self.screen = pygame.display.set_mode((self.SCREEN_WIDTH,self.SCREEN_HEIGHT))
             self.running, self.playing = True, True
             self.actions = {"left": False, "right": False, "up" : False, "down" : False, "esc" : False, "space" : False, "enter" : False, "backspace": False}
-            self.dt, self.prev_time = 0, 0
             self.state_stack = []
             self.load_assets()
             self.load_states()
+            self.background = load_sprite("background_space", 0.4, False)
 
         def game_loop(self):
             while self.playing:
-                self.get_dt()
                 self.get_events()
                 self.update()
                 self.render()
@@ -78,7 +76,7 @@ class Game():
                         self.actions['pause'] = False
 
         def update(self):
-            self.state_stack[-1].update(self.dt,self.actions)
+            self.state_stack[-1].update(self.actions)
 
         def render(self):
             if len(self.state_stack) == 0:
@@ -88,11 +86,6 @@ class Game():
             self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
             if not isinstance(self.state_stack[-1], (Gameplay, Story)):
                 pygame.display.flip()
-
-        def get_dt(self):
-            now = time.time()
-            self.dt = now - self.prev_time
-            self.prev_time = now
 
         def draw_text(self, surface, text, color, x, y, size):
             self.font = pygame.font.Font(os.path.join(self.font_dir, "Polybius1981.ttf"), size)

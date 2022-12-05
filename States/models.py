@@ -1,7 +1,8 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
 from States.utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
-import pygame
+
+
 UP = Vector2(0, -1) # Define a direção para cima
 
 class GameObject: # Classe base para todos os objetos do jogo

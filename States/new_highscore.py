@@ -1,6 +1,6 @@
 import pygame, os
 from States.state import State
-from States.utils import load_sprite 
+from States.utils import load_sprite
 
 with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore_history.txt')) as f:
     lines = f.readlines()
@@ -9,7 +9,7 @@ class NewHighscore(State):
     def __init__(self, game, new_score):
         State.__init__(self, game)
         self.new_score = new_score
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space_leitura.png"))
+        self.background = load_sprite("background_space", 1)
         self.index = [0,0]
         self.teclado = [[['1', -20, 10], ['2', 0, 10], ['3', 20, 10], ['4', 40, 10], ['5', 60, 10], ['6', 80, 10], ['7', 100, 10], ['8', 120, 10], ['9', 140, 10], ['0', 160, 10]],
         [['Q', -20, 40], ['W', 0, 40], ['E', 20, 40], ['R', 40, 40], ['T', 60, 40], ['Y', 80, 40], ['U', 100, 40], ['I', 120, 40], ['O', 140, 40], ['P', 160, 40]],
@@ -23,7 +23,7 @@ class NewHighscore(State):
         self.nome_inserido = "EU"
 
         
-    def update(self, delta_time, actions):
+    def update(self, actions):
         self.update_cursor(actions)
         caract = self.teclado[self.index[0]][self.index[1]][0]
         if actions['space'] and caract != "<" and len(self.nome_inserido) < 30:

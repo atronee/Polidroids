@@ -1,12 +1,13 @@
 import pygame, os
 from States.state import State
+from States.utils import load_sprite 
 
 class Highscore(State):
     def __init__(self, game):
         State.__init__(self, game)
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 1)
         
-    def update(self, delta_time, actions):
+    def update(self, actions):
         if actions["esc"]:
             self.exit_state()
         self.game.reset_keys()

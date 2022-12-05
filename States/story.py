@@ -1,19 +1,19 @@
 import pygame, os
 from States.state import State
 from States.gameplay import Gameplay
-from States.utils import load_sound
+from States.utils import load_sound, load_sprite 
 
 class Story(State):
     def __init__(self, game, type):
         State.__init__(self, game)
         self.type = type
-        self.background = pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "background_space.png"))
+        self.background = load_sprite("background_space", 1)
         self.text_height = self.game.GAME_H
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         self.font_size = 30
         self.soundtrack = load_sound("Game_soundtrack_2")
 
-    def update(self, delta_time, actions):     
+    def update(self, actions):     
         if actions["enter"]:
             self.transition_state()
         self.game.reset_keys()
