@@ -26,7 +26,7 @@ class Story(State):
         self.game.draw_text(display, "na galáxia em que tudo era feito de polígonos.", (255,255,255), self.game.GAME_W/2, (self.text_height + 50), self.font_size)
         self.game.draw_text(display, "Era um reino grande e rico,", (255,255,255), self.game.GAME_W/2, (self.text_height + 100), self.font_size)
         self.game.draw_text(display, "porém um dia foi destruído, já que não", (255,255,255), self.game.GAME_W/2, (self.text_height + 150), self.font_size)
-        self.game.draw_text(display, "conseguirão evitar a chuva de asteroides", (255,255,255), self.game.GAME_W/2, (self.text_height + 200), self.font_size)
+        self.game.draw_text(display, "conseguiram evitar a chuva de asteroides", (255,255,255), self.game.GAME_W/2, (self.text_height + 200), self.font_size)
         self.game.draw_text(display, "que caiu sobre o planeta. Passam se 10 anos", (255,255,255), self.game.GAME_W/2, (self.text_height + 250), self.font_size)
         self.game.draw_text(display, "e agora os destroços do planeta estão", (255,255,255), self.game.GAME_W/2, (self.text_height + 300), self.font_size)
         self.game.draw_text(display, "espalhados pelo espaço.", (255,255,255), self.game.GAME_W/2, (self.text_height + 350), self.font_size)
