@@ -1,7 +1,7 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
 from States.utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
-
+from pygame import mixer
 
 UP = Vector2(0, -1) # Define a direção para cima
 
@@ -96,10 +96,10 @@ class Spaceship(GameObject): # Classe para a nave
         
     def shoot(self):
         """Cria um tiro"""
-        self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
         bullet_velocity = 3 * self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
         bullet = Bullet(self.position, bullet_velocity, self.type) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
+        mixer.Channel(2).play(self.laser_sound) # Chama o método para rodar o som de laser quando a nava atirar
         
     def life_lost(self):
         """Retira uma vida da nave"""

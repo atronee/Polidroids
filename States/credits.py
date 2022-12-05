@@ -21,8 +21,8 @@ class Credits(State):
 		"""
 		display.blit(self.background, (0,0))
 		self.game.draw_text(display, "Créditos", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/4, 40)
-		self.game.draw_text(display, "Gabriel Pereira: Gameplay, Docs", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 - 20, 20)
-		self.game.draw_text(display, "Iago Dutra: UI, UML", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2, 20)
-		self.game.draw_text(display, "Luan: Trilha sonora, Testes", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 20, 20)
-		self.game.draw_text(display, "Luís Felipe Marques: Gameplay, Debugging", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 40, 20)
-		self.game.draw_text(display, "Otávio Augusto: Gameplay", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 60, 20)
+		self.game.draw_text(display, "Gabriel Pereira: Gameplay e Docs", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 - 20, 20)
+		self.game.draw_text(display, "Iago Dutra: UI e UML", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2, 20)
+		self.game.draw_text(display, "Luan: Trilha sonora e Testes", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 20, 20)
+		self.game.draw_text(display, "Luís Felipe Marques: Gameplay e Debugging", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 40, 20)
+		self.game.draw_text(display, "Otávio Augusto: Gameplay e História", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 + 60, 20)
