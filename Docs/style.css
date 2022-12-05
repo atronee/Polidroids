@@ -91,3 +91,8 @@ h2 {
     height: 400px; /* Define a altura */
     object-fit: cover; /* Define o tamanho da imagem */
 }
+
+.img_da{
+    width: 100%; /* Define a largura */
+    height: 100%; /* Define a altura */
+}
