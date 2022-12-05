@@ -6,6 +6,7 @@ from States.utils import load_sound, load_sprite
 
 class Title(State):
     def __init__(self, game):
+        """ Inicializa o estado do jogo """
         State.__init__(self, game)
         self.background = load_sprite("background_space", 1)
         self.options = {0 :"Novo Jogo", 1 : "Configurações"}
@@ -17,6 +18,10 @@ class Title(State):
         self.soundtrack = load_sound("Game_soundtrack_1")
 
     def update(self, actions):
+        """ Atualiza o estado do jogo
+        param actions: dicionário de ações
+        type actions: dict
+        """
         self.update_cursor(actions)      
         if actions["enter"]:
             self.transition_state()
@@ -27,6 +32,10 @@ class Title(State):
         self.game.reset_keys()
 
     def render(self, display):
+        """ Renderiza o estado.
+        param display: tela do jogo
+        type display: Surface
+        """
         self.soundtrack.play()
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Polidroids", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2.35, 40)
@@ -35,6 +44,7 @@ class Title(State):
         display.blit(self.cursor_img, self.cursor_rect)
 
     def transition_state(self):
+        """ Método chamado quando o estado é inserido na pilha de estados """
         if self.options[self.index] == "Novo Jogo": 
             new_state = ChooseSpaceship(self.game, self.soundtrack)
             new_state.enter_state()
@@ -43,6 +53,10 @@ class Title(State):
             new_state.enter_state()
 
     def update_cursor(self, actions):
+        """ Atualiza a posição do cursor
+        param actions: dicionário de ações
+        type actions: dict
+        """
         if actions['down']:
             self.index = (self.index + 1) % len(self.options)
         elif actions['up']:

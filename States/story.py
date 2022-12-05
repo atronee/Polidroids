@@ -5,6 +5,8 @@ from States.utils import load_sound, load_sprite
 
 class Story(State):
     def __init__(self, game, type):
+        """Construtor da classe Story
+        """
         State.__init__(self, game)
         self.type = type
         self.background = load_sprite("background_space", 1)
@@ -13,13 +15,17 @@ class Story(State):
         self.font_size = 30
         self.soundtrack = load_sound("Game_soundtrack_2")
 
-    def update(self, actions):     
+    def update(self, actions):
+        """Atualiza o estado da Story
+        """
         if actions["enter"]:
             self.transition_state()
         self.game.reset_keys()
 
 
     def render(self, display):
+        """Renderiza o estado da Story
+        """
         self.soundtrack.play(20)
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Poligolândia era um planeta central", (255,255,255), self.game.GAME_W/2, (self.text_height), self.font_size)
@@ -47,6 +53,8 @@ class Story(State):
         self.clock.tick(60) # Define o FPS
 
     def transition_state(self):
+        """Transição de estado
+        """
         self.soundtrack.stop()
         new_state = Gameplay(self.game, self.type)
         new_state.enter_state()

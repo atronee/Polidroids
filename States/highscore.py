@@ -4,15 +4,21 @@ from States.utils import load_sprite
 
 class Highscore(State):
     def __init__(self, game):
+        """Construtor da classe Highscore"""
         State.__init__(self, game)
         self.background = load_sprite("background_space", 1)
         
     def update(self, actions):
+        """Atualiza o estado Highscore"""
         if actions["esc"]:
             self.exit_state()
         self.game.reset_keys()
 
     def render(self, display):
+        """Renderiza o estado Highscore
+        :param display: superfície onde o jogo será renderizado
+        :type display: pygame.Surface
+        """
         with open('highscore_history.txt') as f:
             lines = f.readlines()
 
