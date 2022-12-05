@@ -38,10 +38,10 @@ class Spaceship(GameObject): # Classe para a nave
         self.lifes = 7-2*self.type # Define a quantidade de vidas
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
-        self.acceleration = self.type/10
-        self.max_velocity = 5 + 3*self.type
+        self.acceleration = self.type/15
+        self.max_velocity = 3 + 3*self.type
         sprites_img = ["spaceship", "spaceship_2"]
-        super().__init__(position, load_sprite(sprites_img[self.type - 1], 0.2), Vector2(0)) # Chama o construtor da classe pai
+        super().__init__(position, load_sprite(sprites_img[self.type - 1], (3-self.type)*0.1), Vector2(0)) # Chama o construtor da classe pai
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
         
     def rotate(self, clockwise=True): # Método rotaciona a nave
