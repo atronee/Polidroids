@@ -1,6 +1,7 @@
 import pygame, os
 from States.state import State
 from States.gameplay import Gameplay
+from States.utils import load_sound
 
 class Story(State):
     def __init__(self, game, type):
@@ -10,6 +11,7 @@ class Story(State):
         self.text_height = self.game.GAME_H
         self.clock = pygame.time.Clock() # Cria um objeto Clock
         self.font_size = 30
+        self.soundtrack = load_sound("Game_soundtrack_2")
 
     def update(self, delta_time, actions):     
         if actions["enter"]:
@@ -18,6 +20,7 @@ class Story(State):
 
 
     def render(self, display):
+        self.soundtrack.play(20)
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Poligolândia era um planeta central", (255,255,255), self.game.GAME_W/2, (self.text_height), self.font_size)
         self.game.draw_text(display, "na galáxia em que tudo era feito de polígonos.", (255,255,255), self.game.GAME_W/2, (self.text_height + 50), self.font_size)
@@ -40,9 +43,10 @@ class Story(State):
         self.game.draw_text(display, "salvar a galáxia.", (255,255,255), self.game.GAME_W/2, (self.text_height + 900), self.font_size)
         self.game.draw_text(display, "Boa sorte!", (255,255,255), self.game.GAME_W/2, (self.text_height + 950), self.font_size)
         pygame.display.flip()
-        self.text_height -= 2
+        self.text_height -= 0.5
         self.clock.tick(60) # Define o FPS
 
     def transition_state(self):
+        self.soundtrack.stop()
         new_state = Gameplay(self.game, self.type)
         new_state.enter_state()

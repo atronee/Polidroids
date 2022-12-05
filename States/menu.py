@@ -3,6 +3,7 @@ from States.state import State
 from States.tutorial import Tutorial
 from States.highscore import Highscore
 from States.credits import Credits
+from States.utils import load_sound
 
 class Menu(State):
     def __init__(self, game):
@@ -15,16 +16,21 @@ class Menu(State):
         self.cursor_pos_y = self.game.GAME_H/2.5 + 10
         self.cursor_pos_x = self.game.GAME_W/2 - 25
         self.cursor_rect.x, self.cursor_rect.y = self.cursor_pos_x, self.cursor_pos_y
+        self.soundtrack = load_sound("Game_soundtrack_1")
 
     def update(self, delta_time, actions):
         self.update_cursor(actions)      
         if actions["enter"]:
             self.transition_state()
         if actions["esc"]:
+            if str(type(self.game.state_stack[-2])) == "<class 'States.gameplay.Gameplay'>":
+                self.soundtrack.stop()
             self.exit_state()
         self.game.reset_keys()
 
     def render(self, display):
+        if str(type(self.game.state_stack[-2])) == "<class 'States.gameplay.Gameplay'>":
+            self.soundtrack.play(20)
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Configurações", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/4, 40)
         self.game.draw_text(display, "Música", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2.5, 20)
