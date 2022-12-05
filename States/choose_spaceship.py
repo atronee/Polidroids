@@ -1,7 +1,7 @@
 import pygame, os
 from States.state import State
 from States.gameplay import Gameplay
-
+from States.story import Story
 class ChooseSpaceship(State):
 	def __init__(self, game):
 		State.__init__(self, game)
@@ -39,10 +39,10 @@ class ChooseSpaceship(State):
 
 	def transition_state(self):
 		if self.options[self.index] == "spaceship":
-			new_state = Gameplay(self.game, 1)
+			new_state = Story(self.game, 1)
 			new_state.enter_state()
 		elif self.options[self.index] == "spaceship_2":
-			new_state = Gameplay(self.game, 2)
+			new_state = Story(self.game, 2)
 			new_state.enter_state()
 
 	def update_cursor(self, actions):

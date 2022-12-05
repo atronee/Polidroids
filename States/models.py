@@ -1,7 +1,7 @@
 from pygame.math import Vector2 # Importa o módulo math do pygame
 from pygame.transform import rotozoom # Importa o método rotozoom do módulo transform do pygame
 from States.utils import get_random_velocity, load_sound, load_sprite, wrap_position # Importa os métodos do módulo utils
-
+import pygame
 UP = Vector2(0, -1) # Define a direção para cima
 
 class GameObject: # Classe base para todos os objetos do jogo
@@ -28,6 +28,7 @@ class GameObject: # Classe base para todos os objetos do jogo
     def set_velocity(self, velocity):
         self.velocity = Vector2(velocity)
 
+
 class Spaceship(GameObject): # Classe para a nave
     MANEUVERABILITY = 3 # Define a manobrabilidade da nave
     BULLET_SPEED = 3 # Define a velocidade do tiro
@@ -38,7 +39,7 @@ class Spaceship(GameObject): # Classe para a nave
         self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
         self.direction = Vector2(UP) # Define a direção da nave
         self.acceleration = self.type/10
-        self.max_velocity = 5 + 5*self.type
+        self.max_velocity = 5 + 3*self.type
         sprites_img = ["spaceship", "spaceship_2"]
         super().__init__(position, load_sprite(sprites_img[self.type - 1], 0.2), Vector2(0)) # Chama o construtor da classe pai
         self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
@@ -63,13 +64,27 @@ class Spaceship(GameObject): # Classe para a nave
         
     def shoot(self):
         bullet_velocity = 3 * self.direction * self.BULLET_SPEED # Calcula a velocidade do tiro
-        bullet = Bullet(self.position, bullet_velocity) # Cria um tiro
+        bullet = Bullet(self.position, bullet_velocity, self.type) # Cria um tiro
         self.create_bullet_callback(bullet) # Chama o método para criar um tiro
         self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
         
     def life_lost(self):
         self.lifes -= 1 # Decrementa a quantidade de vidas
-    
+
+class Enemy(GameObject):
+    ENEMY_BULLET_SPEED = 2
+    def __init__(self, position, create_bullet_callback):
+        super().__init__(position, load_sprite("enemy_spaceship", 0.09), get_random_velocity(1, 2)) 
+        self.create_bullet_callback = create_bullet_callback # Define o método para criar um tiro
+        self.laser_sound = load_sound("laser_1") # Define o método para tocar o som de laser
+
+    def shoot(self): # o que tem de errado aqui? 
+        bullet_velocity = get_random_velocity(1,2) * self.ENEMY_BULLET_SPEED # Calcula a velocidade do tiro     
+        bullet = Bullet(self.position, bullet_velocity, 3) # Cria um tiro
+        self.create_bullet_callback(bullet) # Chama o método para criar um tiro
+        self.laser_sound.play() # Chama o método para rodar o som de laser quando a nava atirar
+
+
 class Life(GameObject): # Classe para a vida
     def __init__(self, position): # Método construtor
         super().__init__(position, load_sprite("heart", 0.1), Vector2(0)) # Chama o construtor da classe pai
@@ -108,8 +123,10 @@ class Asteroids(GameObject): # Classe para os asteroides
                 self.create_asteroid_callback(asteroid)
         
 class Bullet(GameObject): # Classe para os tiros
-    def __init__(self, position, velocity): # Método construtor
-        super().__init__(position, load_sprite("bullet_1", 0.1), velocity) # Chama o construtor da classe pai
+    def __init__(self, position, velocity, type): # Método construtor
+        self.type = type
+        self.sprite_img = ["bullet_1", "bullet_2", "bullet_3"]
+        super().__init__(position, load_sprite(self.sprite_img[self.type - 1], 0.2), velocity) # Chama o construtor da classe pai
         
     def move(self, surface): # Método move o tiro
         self.position = self.position + self.velocity # Calcula a nova posição do tiro
