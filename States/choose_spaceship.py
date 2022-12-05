@@ -6,6 +6,8 @@ from States.utils import load_sprite
 
 class ChooseSpaceship(State):
 	def __init__(self, game, soundtrack):
+		""" Construtor da classe
+		"""
 		State.__init__(self, game)
 		self.background = load_sprite("background_space", 1)
 		self.spaceship = pygame.transform.scale(pygame.image.load(os.path.join(self.game.assets_dir, "Sprites", "spaceship.png")), (50, 73))
@@ -22,6 +24,10 @@ class ChooseSpaceship(State):
 		self.soundtrack = soundtrack
 
 	def update(self, actions):
+		""" Atualiza o estado do jogo
+    	:param actions: dicionário com as ações do jogador
+    	:type actions: dict
+    	"""    
 		self.update_cursor(actions)
 		if actions["enter"]:
 			self.transition_state()
@@ -30,6 +36,10 @@ class ChooseSpaceship(State):
 		self.game.reset_keys()
 
 	def render(self, display):
+		""" Renderiza o estado do jogo
+		:param display: superfície onde o jogo será renderizado
+		:type display: pygame.Surface
+		"""
 		display.blit(self.background, (0,0))
 		self.game.draw_text(display, "Escolha sua Nave", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/4, 40)
 		display.blit(self.spaceship, (self.game.GAME_W/2 - 100, self.game.GAME_H/2))
@@ -41,6 +51,8 @@ class ChooseSpaceship(State):
 		display.blit(self.cursor_img, self.cursor_rect)
 
 	def transition_state(self):
+		""" Transisiona para o próximo estado do jogo
+		"""
 		if self.options[self.index] == "spaceship":
 			self.soundtrack.stop()
 			new_state = Story(self.game, 1)
@@ -51,6 +63,10 @@ class ChooseSpaceship(State):
 			new_state.enter_state()
 
 	def update_cursor(self, actions):
+		""" Atualiza a posição do cursor
+		:param actions: dicionário com as ações do jogador
+		:type actions: dict
+		"""
 		if actions['right']:
 			self.index = (self.index + 1) % len(self.options)
 		elif actions['left']:

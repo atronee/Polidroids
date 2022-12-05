@@ -7,6 +7,7 @@ with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore_history
 
 class NewHighscore(State):
     def __init__(self, game, new_score):
+        """Initialize the state."""
         State.__init__(self, game)
         self.new_score = new_score
         self.background = load_sprite("background_space", 1)
@@ -24,6 +25,7 @@ class NewHighscore(State):
 
         
     def update(self, actions):
+        """Atualiza o estado."""
         self.update_cursor(actions)
         caract = self.teclado[self.index[0]][self.index[1]][0]
         if actions['space'] and caract != "<" and len(self.nome_inserido) < 30:
@@ -35,6 +37,7 @@ class NewHighscore(State):
         self.game.reset_keys()
     
     def update_cursor(self, actions):
+        """Atualiza a posição do cursor."""
         if actions["right"]:
             self.index[1] = (self.index[1] + 1) % len(self.teclado[self.index[0]])
         elif actions["left"]:
@@ -49,6 +52,8 @@ class NewHighscore(State):
         self.cursor_rect.x = self.game.GAME_W/3 + self.teclado[self.index[0]][self.index[1]][1]
 
     def transition_state(self):
+        """Transição de estado
+        """
         with open(os.path.join(os.path.abspath(__file__ + "/../../"), 'highscore_history.txt')) as f:
             lines = f.readlines()
         with open('highscore_history.txt', "w") as f:
@@ -78,10 +83,12 @@ class NewHighscore(State):
 
         while len(self.game.state_stack) > 1:
             self.exit_state()
-        # new_state = Title(self.game)
-        # new_state.enter_state()
     
     def render(self, display):
+        """Renderiza o estado.
+        param display: tela do jogo
+        type display: pygame.Surface
+        """
         display.blit(self.background, (0,0))
         self.game.draw_text(display, "Parabéns, você entrou para o Highscore!", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/4 - 40, 20)
         self.game.draw_text(display, f"Seu score foi de {self.new_score}", (255,255,255), self.game.GAME_W/2, self.game.GAME_H/2 - 70, 20)

@@ -10,6 +10,7 @@ class Gameplay(State):
     MIN_ASTEROID_DISTANCE = 250
     
     def __init__(self, game, nave):
+        """Construtor da classe Gameplay"""
         State.__init__(self,game)
         self.background = load_sprite("background_space", 0.6, True)
         self.GAME_W,self.GAME_H = 480, 270
@@ -25,7 +26,6 @@ class Gameplay(State):
         self.spaceship = Spaceship(self.nave, (self.screen.get_size()[0]/2, self.screen.get_size()[1]/2), self.bullets.append) # Cria uma instância da classe Spaceship
         self.score_value = 0 # Inicializa a pontuação com 0
         self.explosion_sound = load_sound("explosion_1") # Define o método para gerar um som de explosão
-        self.song_sound = load_sound("Game_soundtrack_3") # Define o método para tocar a música tema da gameplay
         self.enemy = Enemy((0,0), self.enemy_bullets.append)
         self.soundtrack = load_sound("Game_soundtrack_3")
         for i in range(self.spaceship.lifes):
@@ -33,12 +33,21 @@ class Gameplay(State):
         
         
     def show_score(self,x,y): # Método para mostrar o placar
+        """Método para mostrar o placar
+        param x: posição x do placar
+        type x: int
+        param y: posição y do placar
+        type y: int
+        """
         score_font = pygame.font.Font('Assets/Font/Polybius1981.ttf', 32) # Define a fonte e o tamanho da pontuação
         score = score_font.render("Score : " + str(self.score_value), True, (255,255,255)) # Define o texto do placar
         self.screen.blit(score, (x, y)) # Mostra o placar na tela
 
     def update(self, actions):
-        # Check if the game was paused 
+        """Método atualiza o estado do jogo
+        param actions: dicionario de ações
+        type actions: dict
+        """
         if actions["enter"]:
             self.soundtrack.stop()
             new_state = Menu(self.game)
@@ -56,6 +65,7 @@ class Gameplay(State):
         self._process_game_logic() # Processa a lógica do jogo
 
     def _process_game_logic(self): # Método processa a lógica do jogo
+        """Método processa a lógica do jogo"""
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
             game_object.move(self.screen) # Move o objeto
         
@@ -187,6 +197,10 @@ class Gameplay(State):
                 self.enemy_bullets.remove(bullet) # Remove o tiro da lista de tiros
     
     def _get_game_objects(self): # Método retorna todos os objetos do jogo
+        """Retorna todos os objetos do jogo
+        return param: lista de objetos do jogo
+        return type: list
+        """
         game_objects = [*self.asteroids, *self.bullets, *self.life, *self.enemy_bullets] # Cria uma lista com todos os asteroides e tiros
         
         if self.spaceship:
@@ -197,6 +211,10 @@ class Gameplay(State):
         return game_objects # Retorna a lista de objetos do jogo
     
     def render(self, display): # Método desenha na tela
+        """Desenha na tela
+        param display: tela
+        param type: pygame.Surface
+        """
         self.screen.blit(self.background, (0, 0)) # Desenha a imagem de fundo na tela
         
         for game_object in self._get_game_objects(): # Percorre todos os objetos do jogo
