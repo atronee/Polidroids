@@ -40,7 +40,7 @@ li a{
 }
 
 li a:hover {
-    background-color: #8a95bb;
+    color: #8a95bb;
 }
 
 .active {
@@ -76,6 +76,12 @@ li a:hover {
     font-size: 40px /* Define o tamanho da fonte */
 }
 
+.texto-justificado{
+    text-align: left; /* Define o alinhamento do texto */
+    padding: 0px 100px 0px; /* Define o espaçamento interno */
+    font-size: 20px; /* Define o tamanho da fonte */
+}
+
 h2 {
     padding:20px 0 0 0; /* Define o espaçamento interno */    
 }
@@ -84,4 +90,9 @@ h2 {
     width: 100%; /* Define a largura */
     height: 400px; /* Define a altura */
     object-fit: cover; /* Define o tamanho da imagem */
+}
+
+.img_da{
+    width: 100%; /* Define a largura */
+    height: 100%; /* Define a altura */
 }
