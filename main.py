@@ -7,7 +7,7 @@ class Game():
         def __init__(self):
             pygame.init()
             pygame.display.set_caption("Polidroids") # Define o título da janela
-            game_icon = pygame.image.load('Docs/Polidroids.png')
+            game_icon = pygame.image.load("Docs/Polidroids.png")
             pygame.display.set_icon(game_icon)
             self.GAME_W,self.GAME_H = 480, 270
             self.SCREEN_WIDTH,self.SCREEN_HEIGHT = 960, 540
