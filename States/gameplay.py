@@ -4,7 +4,7 @@ from States.menu import Menu
 from States.utils import get_random_position, load_sound, load_sprite
 from States.models import GameObject, Spaceship, Asteroids, Life, Enemy
 from States.game_over import GameOver
-from States.utils import load_sound, load_sprite 
+from States.utils import load_sound, load_sprite
 
 class Gameplay(State):
     MIN_ASTEROID_DISTANCE = 250
@@ -99,7 +99,7 @@ class Gameplay(State):
         if self.spaceship: # Verifica se a nave existe
             for asteroid in self.asteroids: # Percorre todos os asteroides
                 if asteroid.collides_with(self.spaceship): # Verifica se o asteroide colidiu com a nave
-                    self.explosion_sound.play() # Toca o som de explosão
+                    pygame.mixer.Channel(1).play(self.explosion_sound) # Toca o som de explosão
                     self.spaceship.life_lost() # Chama o método life_lost da nave
                     if self.spaceship.lifes == 0:
                         self.soundtrack.stop()
@@ -122,7 +122,7 @@ class Gameplay(State):
         for bullet in self.bullets[:]: # Percorre todos os tiros
             for asteroid in self.asteroids[:]: # Percorre todos os asteroides
                 if asteroid.collides_with(bullet): # Verifica se o asteroide colidiu com o tiro
-                    self.explosion_sound.play() # Toca o som de explosão
+                    pygame.mixer.Channel(1).play(self.explosion_sound) # Toca o som de explosão
                     self.asteroids.remove(asteroid) # Remove o asteroide
                     self.bullets.remove(bullet) # Remove o tiro
                     asteroid.split() # Divide o asteroide em 2
@@ -139,7 +139,7 @@ class Gameplay(State):
         for bullet in self.bullets[:]:
             if self.enemy:
                 if bullet.collides_with(self.enemy):
-                    self.explosion_sound.play()
+                    pygame.mixer.Channel(1).play(self.explosion_sound) # Toca o som de explosão
                     self.bullets.remove(bullet)
                     self.enemy = None
                     self.score_value += 500
@@ -147,7 +147,7 @@ class Gameplay(State):
 
         if self.enemy and self.spaceship:
             if self.enemy.collides_with(self.spaceship):
-                self.explosion_sound.play()
+                pygame.mixer.Channel(1).play(self.explosion_sound) # Toca o som de explosão
                 self.spaceship.life_lost()
                 if self.spaceship.lifes == 0:
                     self.soundtrack.stop()
@@ -168,7 +168,7 @@ class Gameplay(State):
 
         for bullet in self.enemy_bullets[:]: # Percorre todos os tiros
             if bullet.collides_with(self.spaceship): # Verifica se uma bala inimiga colidiu com a nave
-                self.explosion_sound.play() # Toca o som de explosão
+                pygame.mixer.Channel(1).play(self.explosion_sound) # Toca o som de explosão
                 self.spaceship.life_lost() # Chama o método life_lost da nave
                 self.enemy_bullets.remove(bullet) # Remove o tiro
                 if self.spaceship.lifes == 0:

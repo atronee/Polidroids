@@ -134,5 +134,7 @@ class Game():
 
 if __name__ == "__main__":
     g = Game()
+    pygame.mixer.pre_init()
+    pygame.mixer.init()
     while g.running:
         g.game_loop()
